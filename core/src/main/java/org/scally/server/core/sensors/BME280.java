@@ -198,6 +198,18 @@ public class BME280 {
 
       // 1 second standby time (101), 10 second IIR filter (110) and 3-wire SPI disabled
       device.write( CONFIGURATION_ADDRESS, (byte) 0b10111000 );
+
+
+      device.write( 0xF2, (byte) 0x01 );
+      // Select control measurement register
+      // Normal mode, temp and pressure over sampling rate = 1
+      device.write( 0xF4, (byte) 0x27 );
+      // Select config register
+      // Stand_by time = 1000 ms
+      device.write( 0xF5, (byte) 0xA0 );
+
+
+
     } catch ( IOException e ) {
       e.printStackTrace();
     }
@@ -246,7 +258,11 @@ public class BME280 {
     System.out.format( "-->> T3: %d\n", calibration.T3 );
   }
 
-  public BME280Data read() {
+  public BME280Data read() throws InterruptedException {
+    while ( status() != BME280Status.IDLE ) {
+      Thread.sleep( 10 );
+    }
+
     byte[] data = new byte[ DATA_LENGTH ];
 
     try {

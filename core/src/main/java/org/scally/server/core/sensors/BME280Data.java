@@ -12,6 +12,27 @@ public class BME280Data {
     }
 
     public void setTemperature( byte[] data, BME280Calibration calibration ) {
+
+
+      long adc_t =
+        ( ( (long) ( data[ 3 ] & 0xFF ) * 65536 ) + ( (long) ( data[ 4 ] & 0xFF ) * 256 ) + (long) ( data[ 5 ] & 0xF0 ) )
+          / 16;
+
+      System.out.printf( "      >> adc_t : %d %n", adc_t );
+
+
+      double var1 = ( ( (double) adc_t ) / 16384.0 - ( (double) calibration.T1 ) / 1024.0 ) * ( (double) calibration.T2 );
+      double var2 = ( ( ( (double) adc_t ) / 131072.0 - ( (double) calibration.T1 ) / 8192.0 ) *
+        ( ( (double) adc_t ) / 131072.0 - ( (double) calibration.T1 ) / 8192.0 ) ) * ( (double) calibration.T3 );
+      double t_fine = (long) ( var1 + var2 );
+      double cTemp = ( var1 + var2 ) / 5120.0;
+      double fTemp = cTemp * 1.8 + 32;
+
+      System.out.printf( "Temperature in Celsius : %.2f C %n", cTemp );
+      System.out.printf( "Temperature in Fahrenheit : %.2f F %n", fTemp );
+
+
+
       long value = ( ( data[3] & 0xFF ) << 12 ) + ( ( data[4] & 0xFF ) << 4) + ( ( data[5] & 0xF0 ) >> 4 );
 
       System.out.format( "## Uncalibrated temperature value: %d\n", value );
