@@ -28,6 +28,10 @@ public class BME280 {
       dig_T3 -= 65536;
     }
 
+    System.out.format( "---->>>> T1: %d\n", dig_T1 );
+    System.out.format( "---->>>> T2: %d\n", dig_T2 );
+    System.out.format( "---->>>> T3: %d\n", dig_T3 );
+
     // pressure coefficients
     int dig_P1 = ( b1[ 6 ] & 0xFF ) + ( ( b1[ 7 ] & 0xFF ) * 256 );
     int dig_P2 = ( b1[ 8 ] & 0xFF ) + ( ( b1[ 9 ] & 0xFF ) * 256 );
@@ -98,6 +102,13 @@ public class BME280 {
     if ( dig_H6 > 127 ) {
       dig_H6 -= 256;
     }
+
+    System.out.format( "---->>>> H1: %d\n", dig_H1 );
+    System.out.format( "---->>>> H2: %d\n", dig_H2 );
+    System.out.format( "---->>>> H3: %d\n", dig_H3 );
+    System.out.format( "---->>>> H4: %d\n", dig_H4 );
+    System.out.format( "---->>>> H5: %d\n", dig_H5 );
+    System.out.format( "---->>>> H6: %d\n", dig_H6 );
 
     // Select control humidity register
     // Humidity over sampling rate = 1
