@@ -59,7 +59,6 @@ public class BME280 {
   public static final int CALIBRATION_BANK2_START_ADDRESS = 0xE1;
   public static final int CALIBRATION_BANK1_LENGTH = 25;
   public static final int CALIBRATION_BANK2_LENGTH = 7;
-  public static final int CALIBRATION_DATA_LENGTH = 32;
 
   private I2CBus bus;
   private I2CDevice device;
@@ -91,20 +90,26 @@ public class BME280 {
   }
 
   public void calibrate() {
-    byte[] data = new byte[ CALIBRATION_DATA_LENGTH ];
+    byte[] bank1 = new byte[ CALIBRATION_BANK1_LENGTH ];
+    byte[] bank2 = new byte[ CALIBRATION_BANK2_LENGTH ];
 
     try {
       // read 25 bytes of data from the first bank of calibration data
-      device.read(CALIBRATION_BANK1_START_ADDRESS, data, 0, CALIBRATION_BANK1_LENGTH);
+      device.read(CALIBRATION_BANK1_START_ADDRESS, bank1, 0, CALIBRATION_BANK1_LENGTH);
 
       // read 7 bytes of data from the second bank of calibration data
-      device.read(CALIBRATION_BANK2_START_ADDRESS, data, CALIBRATION_BANK1_LENGTH + 1, CALIBRATION_BANK2_LENGTH);
+      device.read(CALIBRATION_BANK2_START_ADDRESS, bank2, 0, CALIBRATION_BANK2_LENGTH);
     } catch ( IOException e ) {
       e.printStackTrace();
     }
 
+    for( int i = 0; i < bank1.length; i ++ ) {
+      System.out.format( "Calibration byte %d: %d", i, bank1[i] );
+    }
 
-
+    for( int i = 0; i < bank2.length; i ++ ) {
+      System.out.format( "Calibration byte %d: %d", i + bank1.length, bank2[i] );
+    }
 
     // The BME280 output consists of the ADC output values. However, each sensing element
     //behaves differently. Therefore, the actual pressure and temperature must be calculated using a
