@@ -19,7 +19,7 @@ public class BME280 {
    * If the value is different, other device may be using the I2C address where the BME 280 was expected to be found.
    *
    * Other possible valid values are:
-   *   - 0x56/0x57 for sample chips
+   *   - 0x56 or 0x57 for sample chips
    *   - 0x58 for mass production chips
    */
   public static final int CHIP_ID_ADDRESS = 0xD0;
@@ -44,10 +44,10 @@ public class BME280 {
 
   /**
    * Calibration data for temperature, pressure and humidity is found in two memory banks:
-   *   - the first bank starts at address 0x88 and finishes at 0xA1 taking 25 bytes of data
+   *   - the first bank starts at address 0x88 and finishes at 0xA1 taking 26 bytes of data
    *   - the second bank goes from 0xE1 to 0xE7 taking 7 bytes of data
    *
-   * There is a total of 32 bytes of calibration data:
+   * There is a total of 32 bytes of calibration data (address 0xA0 is not used):
    *   - 6 bytes for temperature
    *   - 18 bytes for pressure
    *   - 8 bytes for humidity
@@ -57,7 +57,7 @@ public class BME280 {
    */
   public static final int CALIBRATION_BANK1_START_ADDRESS = 0x88;
   public static final int CALIBRATION_BANK2_START_ADDRESS = 0xE1;
-  public static final int CALIBRATION_BANK1_LENGTH = 25;
+  public static final int CALIBRATION_BANK1_LENGTH = 26;
   public static final int CALIBRATION_BANK2_LENGTH = 7;
 
   private I2CBus bus;
@@ -130,7 +130,7 @@ public class BME280 {
     calibration.P9 = ( ( ( ( bank1[23] & 0xFF ) << 8 ) + ( bank1[22] & 0xFF ) ) << 1 ) >> 1; // signed short
 
     // calculate humidity calibration parameters
-    calibration.H1 = bank1[24] & 0xFF; // unsigned char
+    calibration.H1 = bank1[25] & 0xFF; // unsigned char
     calibration.H2 = ( ( ( ( bank2[1] & 0xFF ) << 8 ) + ( bank2[0] & 0xFF ) ) << 1 ) >> 1; // signed short
     calibration.H3 = bank2[2] & 0xFF; // unsigned char
     calibration.H4 = ( ( ( ( bank2[3] & 0xFF ) << 4 ) + ( bank2[4] & 0xF ) ) << 1 ) >> 1; // signed short
