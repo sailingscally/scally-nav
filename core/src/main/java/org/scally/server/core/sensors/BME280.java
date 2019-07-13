@@ -246,7 +246,7 @@ public class BME280 {
     System.out.format( "-->> T3: 0x%s\n", Integer.toHexString( calibration.T3 ) );
   }
 
-  public void read() {
+  public BME280Data read() {
     byte[] data = new byte[ DATA_LENGTH ];
 
     try {
@@ -255,19 +255,7 @@ public class BME280 {
       e.printStackTrace();
     }
 
-    long value = ( ( data[3] & 0xFF ) << 16 ) + ( ( data[4] & 0xFF ) << 8) + ( ( data[5] >> 4 ) & 0xF );
-
-    System.out.format( "## Uncalibrated temperature value: %d\n", value );
-    System.out.format( "## Uncalibrated temperature value: %d (1/16)\n", value / 16 );
-
-    double var1 = ( value / 16384.0 - calibration.T1 / 1024.0 ) * calibration.T2;
-    double var2 = ( ( value / 131072.0 - calibration.T1 / 8192.0 ) * ( value / 131072.0 - calibration.T1/8192.0 ) )  * calibration.T3;
-
-    double t_fine = var1 + var2;
-    double t = t_fine / 5120.0;
-
-    //    return T;
-    System.out.format( "## Temperature value: %d\n", t );
+    return new BME280Data( data, calibration );
 
 
     // To read out data after a conversion, it is strongly recommended to use a burst read and not
