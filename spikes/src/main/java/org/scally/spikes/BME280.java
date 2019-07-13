@@ -16,6 +16,11 @@ public class BME280 {
     byte[] b1 = new byte[ 24 ];
     device.read( 0x88, b1, 0, 24 );
 
+
+    for( int i = 0; i < b1.length; i ++ ) {
+      System.out.format( "Calibration byte %d: %d [%s]\n", i, b1[i], Integer.toHexString ( b1[i] ) );
+    }
+
     // Convert the data
     // temp coefficients
     int dig_T1 = ( b1[ 0 ] & 0xFF ) + ( ( b1[ 1 ] & 0xFF ) * 256 );
@@ -68,6 +73,10 @@ public class BME280 {
 
     // Read 7 bytes of data from address 0xE1(225)
     device.read( 0xE1, b1, 0, 7 );
+
+    for( int i = 0; i < 7; i ++ ) {
+      System.out.format( "Calibration byte %d: %d [%s]\n", i + b1.length + 1, b1[i], Integer.toHexString( b1[i] ) );
+    }
 
     // Convert the data
     // humidity coefficients

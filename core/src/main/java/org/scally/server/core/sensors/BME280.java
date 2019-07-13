@@ -104,11 +104,11 @@ public class BME280 {
     }
 
     for( int i = 0; i < bank1.length; i ++ ) {
-      System.out.format( "Calibration byte %d: %d", i, bank1[i] );
+      System.out.format( "Calibration byte %d: %d [%s]\n", i, bank1[i], Integer.toHexString ( bank1[i] ) );
     }
 
     for( int i = 0; i < bank2.length; i ++ ) {
-      System.out.format( "Calibration byte %d: %d", i + bank1.length, bank2[i] );
+      System.out.format( "Calibration byte %d: %d [%s]\n", i + bank1.length, bank2[i], Integer.toHexString( bank2[i] ) );
     }
 
     // The BME280 output consists of the ADC output values. However, each sensing element
