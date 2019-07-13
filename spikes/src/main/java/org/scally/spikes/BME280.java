@@ -135,6 +135,9 @@ public class BME280 {
     // Convert the humidity data
     long adc_h = ( (long) ( data[ 6 ] & 0xFF ) * 256 + (long) ( data[ 7 ] & 0xFF ) );
 
+    System.out.format( "## Uncalibrated temperature value: %d\n", adc_t );
+
+
     // Temperature offset calculations
     double var1 = ( ( (double) adc_t ) / 16384.0 - ( (double) dig_T1 ) / 1024.0 ) * ( (double) dig_T2 );
     double var2 = ( ( ( (double) adc_t ) / 131072.0 - ( (double) dig_T1 ) / 8192.0 ) *

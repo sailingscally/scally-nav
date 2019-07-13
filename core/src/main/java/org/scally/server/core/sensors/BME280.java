@@ -23,14 +23,24 @@ public class BME280 {
    *   - 0x58 for mass production chips
    */
   public static final int CHIP_ID_ADDRESS = 0xD0;
-  public static final int CHIP_ID_VALUE = 0x60;
+  public static final byte CHIP_ID_VALUE = (byte) 0x60;
 
   /**
    * Writing the value 0xB6 to the reset register at address 0xE0 will perform a soft reset of the BME 280 chip.
    * The value read from this address will always be 0x00 but there is no need to read data from this register.
    */
   public static final int RESET_ADDRESS = 0xE0;
-  public static final int RESET_VALUE = 0xB6;
+  public static final byte RESET_VALUE = (byte) 0xB6;
+
+  /**
+   * Data from the BME 280 sensor is available at addresses 0xF7 to 0xFE.
+   * There are a total of 8 bytes with data:
+   *   - temperature: 0xFA, 0xFB and 0xFC
+   *   - pressure: 0xF7, 0xF8 and 0xF9
+   *   - humidity: 0xFD and 0xFE
+   */
+  public static final int DATA_ADDRESS = 0xF7;
+  public static final int DATA_LENGTH = 8;
 
   /**
    * The status register contains two bits which indicate the status of the device
@@ -60,50 +70,140 @@ public class BME280 {
   public static final int CALIBRATION_BANK1_LENGTH = 26;
   public static final int CALIBRATION_BANK2_LENGTH = 7;
 
+  /**
+   * The "ctrl_hum" register controls oversampling of humidity data.
+   *
+   * Only the first three bits are used:
+   *   - 000 - skipped (output set to 0x80000)
+   *   - 001 - x1
+   *   - 010 - x2
+   *   - 011 - x4
+   *   - 100 - x8
+   *   - 101 - x16
+   *
+   * Note: data written to this register will only take place after writing to the "ctrl_meas" register.
+   */
+  public static final int CONTROL_HUMIDITY_ADDRESS = 0xF2;
+
+  /**
+   * The "ctrl_meas" register controls oversampling for both temperature and pressure and the sensor mode.
+   *
+   * Bits 7, 6 and 5 control oversampling for temperature data (see table above).
+   * Bits 4, 3 and 2 control oversampling for pressure data (see table above).
+   *
+   * Bits 1 and 0 control the sensor mode:
+   *   - 00 - sleep mode
+   *   - 01 and 10 - forced mode
+   *   - 11 - normal mode
+   */
+  public static final int CONTROL_PRESSURE_TEMPERATURE_ADDRESS = 0xF4;
+
+  /**
+   * The "config" register sets the rate, filter and interface options of the device.
+   *
+   * Bits 7, 6 and 5 control the inactive duration in normal mode (see below).
+   * Bits 4, 3 and 2 control the time constant of the IIR filter (values in milliseconds):
+   *   - 000 - 0.5
+   *   - 001 - 62.5
+   *   - 010 - 125
+   *   - 011 - 250
+   *   - 100 - 500
+   *   - 101 - 1000
+   *   - 110 - 10
+   *   - 111 - 20
+   *
+   * Bit 0 enables 3-wire SPI interface when set to 1.
+   *
+   * Note: writes to the config register in normal mode may be ignored but will not be ignored in sleed mode.
+   */
+  public static final int CONFIGURATION_ADDRESS = 0xF5;
+
   private I2CBus bus;
   private I2CDevice device;
 
   private BME280Calibration calibration = new BME280Calibration();
 
-  public BME280( /* I2C */ ) {
+  public BME280( /* I2C */ ) throws InterruptedException, I2CFactory.UnsupportedBusNumberException, BME280NotFoundException {
     // TODO: store I2C wrapper for thread safe usage
 
     try {
       bus = I2CFactory.getInstance( I2CBus.BUS_1 );
       device = bus.getDevice( I2C_ADDRESS );
-    } catch ( I2CFactory.UnsupportedBusNumberException e ) {
+    } catch ( IOException e ) {
+      throw new BME280NotFoundException( String.format( "BME 280 sensor not found at address 0x%s.", Integer.toHexString( I2C_ADDRESS ) ), e );
+    }
+
+    if( !check() ) {
+      throw new BME280NotFoundException( String.format( "BME 280 sensor with ID 0x%s not found at address 0x%s.",
+        Integer.toHexString( CHIP_ID_VALUE ), Integer.toHexString( I2C_ADDRESS ) ) );
+    }
+
+    reset();
+
+    while ( status() != BME280Status.Idle ) {
+      Thread.sleep( 50 );
+    }
+
+    calibrate();
+    init();
+  }
+
+  public BME280Status status() {
+    try {
+      int status = device.read( STATUS_ADDRESS ) & 0xFF;
+
+      System.out.format( ">> BME 280 device status: %d [%s]", status, Integer.toHexString( status ) );
+
+      if( ( status & STATUS_MEASURING_MASK ) == STATUS_MEASURING_MASK ) {
+        return BME280Status.Measuring;
+      }
+
+      if( ( status & STATUS_UPDATING_MASK ) == STATUS_UPDATING_MASK ) {
+        return BME280Status.Updating;
+      }
+
+      return BME280Status.Idle;
+    } catch ( IOException e ) {
       e.printStackTrace();
+    }
+
+    return BME280Status.Error;
+  }
+
+  private boolean check() {
+    try {
+      return device.read( CHIP_ID_ADDRESS ) == CHIP_ID_VALUE;
+    } catch ( IOException e ) {
+      e.printStackTrace();
+    }
+
+    return false;
+  }
+
+  private void reset() {
+    try {
+      device.write( RESET_ADDRESS, RESET_VALUE );
     } catch ( IOException e ) {
       e.printStackTrace();
     }
   }
 
-  public void init() {
-// After
-    //setting the measurement and filter options and enabling normal mode, the last measurement
-    //results can always be obtained at the data registers without the need of further write accesses.
+  private void init() {
+    try {
+      // humidity oversampling = 1x (001)
+      device.write( CONTROL_HUMIDITY_ADDRESS, (byte) 0b00000001 );
 
-    // The BME280 measurement period consists of a temperature, pressure and humidity
-    //measurement with selectable oversampling.
+      // temperature oversampling = 1x (001), pressure oversampling = 1x (001), normal mode (11)
+      device.write( CONTROL_PRESSURE_TEMPERATURE_ADDRESS, (byte) 0b00100111 );
 
-
-
-    // use settings from: 3.5.1 Weather monitoring
+      // 1 second standby time (101), 10 second IIR filter (110) and 3-wire SPI disabled
+      device.write( CONFIGURATION_ADDRESS, (byte) 0b10111000 );
+    } catch ( IOException e ) {
+      e.printStackTrace();
+    }
   }
 
-  private int convertToUnsignedShort( byte msb, byte lsb ) {
-    return ( ( msb & 0xFF ) << 8 ) + ( lsb & 0xFF );
-  }
-
-  private int convertToSignedShort( byte msb, byte lsb ) {
-    return convertToSignedShort( convertToUnsignedShort( msb, lsb ) );
-  }
-
-  private int convertToSignedShort( int value) {
-    return value > 0x7FFF ? value - 0x10000 : value;
-  }
-
-  public void calibrate() {
+  private void calibrate() {
     byte[] bank1 = new byte[ CALIBRATION_BANK1_LENGTH ];
     byte[] bank2 = new byte[ CALIBRATION_BANK2_LENGTH ];
 
@@ -141,26 +241,42 @@ public class BME280 {
     calibration.H5 = convertToSignedShort( ( ( bank2[5] & 0xFF ) << 4 ) + ( ( bank2[4] & 0xFF ) >> 4 ) );
     calibration.H6 = bank2[6]; // signed char
 
-    System.out.format( "---->>>> T1: %d\n", calibration.T1 );
-    System.out.format( "---->>>> T2: %d\n", calibration.T2 );
-    System.out.format( "---->>>> T3: %d\n", calibration.T3 );
+    System.out.format( "-->> T1: 0x%s\n", Integer.toHexString( calibration.T1 ) );
+    System.out.format( "-->> T2: 0x%s\n", Integer.toHexString( calibration.T2 ) );
+    System.out.format( "-->> T3: 0x%s\n", Integer.toHexString( calibration.T3 ) );
+  }
 
-    System.out.format( "---->>>> P1: %d\n", calibration.P1 );
-    System.out.format( "---->>>> P2: %d\n", calibration.P2 );
-    System.out.format( "---->>>> P3: %d\n", calibration.P3 );
-    System.out.format( "---->>>> P4: %d\n", calibration.P4 );
-    System.out.format( "---->>>> P5: %d\n", calibration.P5 );
-    System.out.format( "---->>>> P6: %d\n", calibration.P6 );
-    System.out.format( "---->>>> P7: %d\n", calibration.P7 );
-    System.out.format( "---->>>> P8: %d\n", calibration.P8 );
-    System.out.format( "---->>>> P9: %d\n", calibration.P9 );
+  public void read() {
+    byte[] data = new byte[ DATA_LENGTH ];
 
-    System.out.format( "---->>>> H1: %d\n", calibration.H1 );
-    System.out.format( "---->>>> H2: %d\n", calibration.H2 );
-    System.out.format( "---->>>> H3: %d\n", calibration.H3 );
-    System.out.format( "---->>>> H4: %d\n", calibration.H4 );
-    System.out.format( "---->>>> H5: %d\n", calibration.H5 );
-    System.out.format( "---->>>> H6: %d\n", calibration.H6 );
+    try {
+      device.read( DATA_ADDRESS, data, 0, DATA_LENGTH );
+    } catch ( IOException e ) {
+      e.printStackTrace();
+    }
+
+    long value = ( ( data[3] & 0xFF ) << 16 ) + ( ( data[4] & 0xFF ) << 8) + ( ( data[5] >> 4 ) & 0xF );
+
+    System.out.format( "## Uncalibrated temperature value: %d\n", value );
+    System.out.format( "## Uncalibrated temperature value: %d (1/16)\n", value / 16 );
+
+    double var1 = ( value / 16384.0 - calibration.T1 / 1024.0 ) * calibration.T2;
+    double var2 = ( ( value / 131072.0 - calibration.T1 / 8192.0 ) * ( value / 131072.0 - calibration.T1/8192.0 ) )  * calibration.T3;
+
+    double t_fine = var1 + var2;
+    double t = t_fine / 5120.0;
+
+    //    return T;
+    System.out.format( "## Temperature value: %d\n", t );
+
+
+    // To read out data after a conversion, it is strongly recommended to use a burst read and not
+    // address every register individually. This will prevent a possible mix-up of bytes belonging to
+    // different measurements and reduce interface traffic.
+
+    // Data readout is done by starting a burst read from 0xF7 to 0xFC (temperature and pressure) or
+    // from 0xF7 to 0xFE (temperature, pressure and humidity). The data are read out in an unsigned
+    // 20-bit format both for pressure and for temperature and in an unsigned 16-bit format for humidity.
 
     // The BME280 output consists of the ADC output values. However, each sensing element
     //behaves differently. Therefore, the actual pressure and temperature must be calculated using a
@@ -173,16 +289,6 @@ public class BME280 {
     // Both pressure and temperature values are expected to be received in 20 bit format,
     // positive, stored in a 32 bit signed integer. Humidity is expected to be received in 16 bit format,
     // positive, stored in a 32 bit signed integer.
-  }
-
-  public void read() {
-    // To read out data after a conversion, it is strongly recommended to use a burst read and not
-    // address every register individually. This will prevent a possible mix-up of bytes belonging to
-    // different measurements and reduce interface traffic.
-
-    // Data readout is done by starting a burst read from 0xF7 to 0xFC (temperature and pressure) or
-    // from 0xF7 to 0xFE (temperature, pressure and humidity). The data are read out in an unsigned
-    // 20-bit format both for pressure and for temperature and in an unsigned 16-bit format for humidity.
   }
 
 
@@ -221,5 +327,17 @@ public class BME280 {
     // noise. The resolution of the humidity measurement is fixed at 16 bit ADC output.
 
     return 0;
+  }
+
+  private int convertToUnsignedShort( byte msb, byte lsb ) {
+    return ( ( msb & 0xFF ) << 8 ) + ( lsb & 0xFF );
+  }
+
+  private int convertToSignedShort( byte msb, byte lsb ) {
+    return convertToSignedShort( convertToUnsignedShort( msb, lsb ) );
+  }
+
+  private int convertToSignedShort( int value) {
+    return value > 0x7FFF ? value - 0x10000 : value;
   }
 }
