@@ -152,7 +152,7 @@ public class BME280 {
     try {
       int status = device.read( STATUS_ADDRESS ) & 0xFF;
 
-      System.out.format( ">> BME 280 device status: %d [%s]", status, Integer.toHexString( status ) );
+      System.out.format( ">> BME 280 device status: %d [0x%s]\n", status, Integer.toHexString( status ) );
 
       if( ( status & STATUS_MEASURING_MASK ) == STATUS_MEASURING_MASK ) {
         return BME280Status.MEASURING;
@@ -241,9 +241,9 @@ public class BME280 {
     calibration.H5 = convertToSignedShort( ( ( bank2[5] & 0xFF ) << 4 ) + ( ( bank2[4] & 0xFF ) >> 4 ) );
     calibration.H6 = bank2[6]; // signed char
 
-    System.out.format( "-->> T1: 0x%s\n", Integer.toHexString( calibration.T1 ) );
-    System.out.format( "-->> T2: 0x%s\n", Integer.toHexString( calibration.T2 ) );
-    System.out.format( "-->> T3: 0x%s\n", Integer.toHexString( calibration.T3 ) );
+    System.out.format( "-->> T1: %d\n", calibration.T1 );
+    System.out.format( "-->> T2: %d\n", calibration.T2 );
+    System.out.format( "-->> T3: %d\n", calibration.T3 );
   }
 
   public BME280Data read() {
