@@ -200,13 +200,13 @@ public class BME280 {
       device.write( CONFIGURATION_ADDRESS, (byte) 0b10111000 );
 
 
-      device.write( 0xF2, (byte) 0x01 );
+//      device.write( 0xF2, (byte) 0x01 );
       // Select control measurement register
       // Normal mode, temp and pressure over sampling rate = 1
-      device.write( 0xF4, (byte) 0x27 );
+//      device.write( 0xF4, (byte) 0x27 );
       // Select config register
       // Stand_by time = 1000 ms
-      device.write( 0xF5, (byte) 0xA0 );
+//      device.write( 0xF5, (byte) 0xA0 );
 
 
 
