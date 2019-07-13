@@ -63,6 +63,8 @@ public class BME280 {
   private I2CBus bus;
   private I2CDevice device;
 
+  private BME280Calibration calibration = new BME280Calibration();
+
   public BME280( /* I2C */ ) {
     // TODO: store I2C wrapper for thread safe usage
 
@@ -110,6 +112,15 @@ public class BME280 {
     for( int i = 0; i < bank2.length; i ++ ) {
       System.out.format( "Calibration byte %d: %d [%s]\n", i + bank1.length, bank2[i], Integer.toHexString( bank2[i] ) );
     }
+
+    // calculate temperature calibration parameters
+    calibration.T1 = ( ( bank1[1] & 0xFF ) << 8 ) + ( bank1[0] & 0xFF ); // unsigned
+    calibration.T2 = ( ( ( ( bank1[3] & 0xFF ) << 8 ) + ( bank1[2] & 0xFF ) ) << 1 ) >> 1; // signed
+    calibration.T3 = ( ( ( ( bank1[5] & 0xFF ) << 8 ) + ( bank1[4] & 0xFF ) ) << 1 ) >> 1; // signed
+
+    System.out.format( "---->>>> T1: %d\n", calibration.T1 );
+    System.out.format( "---->>>> T2: %d\n", calibration.T2 );
+    System.out.format( "---->>>> T3: %d\n", calibration.T3 );
 
     // The BME280 output consists of the ADC output values. However, each sensing element
     //behaves differently. Therefore, the actual pressure and temperature must be calculated using a

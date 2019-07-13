@@ -33,6 +33,10 @@ public class BME280 {
       dig_T3 -= 65536;
     }
 
+    System.out.format( "---->>>> T1: %d\n", dig_T1 );
+    System.out.format( "---->>>> T2: %d\n", dig_T2 );
+    System.out.format( "---->>>> T3: %d\n", dig_T3 );
+
     // pressure coefficients
     int dig_P1 = ( b1[ 6 ] & 0xFF ) + ( ( b1[ 7 ] & 0xFF ) * 256 );
     int dig_P2 = ( b1[ 8 ] & 0xFF ) + ( ( b1[ 9 ] & 0xFF ) * 256 );
@@ -70,6 +74,8 @@ public class BME280 {
 
     // Read 1 byte of data from address 0xA1(161)
     int dig_H1 = ( (byte) device.read( 0xA1 ) & 0xFF );
+
+    System.out.format( "Calibration byte %d: %d [%s]\n", 24, device.read( 0xA1 ), Integer.toHexString( device.read( 0xA1 ) ) );
 
     // Read 7 bytes of data from address 0xE1(225)
     device.read( 0xE1, b1, 0, 7 );
