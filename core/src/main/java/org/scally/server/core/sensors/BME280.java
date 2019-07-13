@@ -100,7 +100,7 @@ public class BME280 {
   }
 
   private int convertToSignedShort( int value) {
-    return value > 0x7FFF ? value - 0xFFFF : value;
+    return value > 0x7FFF ? value - 0x10000 : value;
   }
 
   public void calibrate() {
@@ -108,7 +108,7 @@ public class BME280 {
     byte[] bank2 = new byte[ CALIBRATION_BANK2_LENGTH ];
 
     try {
-      // read 25 bytes of data from the first bank of calibration data
+      // read 26 bytes of data from the first bank of calibration data
       device.read(CALIBRATION_BANK1_START_ADDRESS, bank1, 0, CALIBRATION_BANK1_LENGTH);
 
       // read 7 bytes of data from the second bank of calibration data
