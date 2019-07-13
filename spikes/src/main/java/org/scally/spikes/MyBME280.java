@@ -6,7 +6,6 @@ public class MyBME280 {
 
   public static void main( String args[] ) throws Exception {
     BME280 bme280 = new BME280();
-    bme280.calibrate();
-
+    bme280.read();
   }
 }
