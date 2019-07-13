@@ -114,13 +114,47 @@ public class BME280 {
     }
 
     // calculate temperature calibration parameters
-    calibration.T1 = ( ( bank1[1] & 0xFF ) << 8 ) + ( bank1[0] & 0xFF ); // unsigned
-    calibration.T2 = ( ( ( ( bank1[3] & 0xFF ) << 8 ) + ( bank1[2] & 0xFF ) ) << 1 ) >> 1; // signed
-    calibration.T3 = ( ( ( ( bank1[5] & 0xFF ) << 8 ) + ( bank1[4] & 0xFF ) ) << 1 ) >> 1; // signed
+    calibration.T1 = ( ( bank1[1] & 0xFF ) << 8 ) + ( bank1[0] & 0xFF ); // unsigned short
+    calibration.T2 = ( ( ( ( bank1[3] & 0xFF ) << 8 ) + ( bank1[2] & 0xFF ) ) << 1 ) >> 1; // signed short
+    calibration.T3 = ( ( ( ( bank1[5] & 0xFF ) << 8 ) + ( bank1[4] & 0xFF ) ) << 1 ) >> 1; // signed short
+
+    // calculate pressure calibration parameters
+    calibration.P1 = ( ( bank1[7] & 0xFF ) << 8 ) + ( bank1[6] & 0xFF ); // unsigned short
+    calibration.P2 = ( ( ( ( bank1[9] & 0xFF ) << 8 ) + ( bank1[8] & 0xFF ) ) << 1 ) >> 1; // signed short
+    calibration.P3 = ( ( ( ( bank1[11] & 0xFF ) << 8 ) + ( bank1[10] & 0xFF ) ) << 1 ) >> 1; // signed short
+    calibration.P4 = ( ( ( ( bank1[13] & 0xFF ) << 8 ) + ( bank1[12] & 0xFF ) ) << 1 ) >> 1; // signed short
+    calibration.P5 = ( ( ( ( bank1[15] & 0xFF ) << 8 ) + ( bank1[14] & 0xFF ) ) << 1 ) >> 1; // signed short
+    calibration.P6 = ( ( ( ( bank1[17] & 0xFF ) << 8 ) + ( bank1[16] & 0xFF ) ) << 1 ) >> 1; // signed short
+    calibration.P7 = ( ( ( ( bank1[19] & 0xFF ) << 8 ) + ( bank1[18] & 0xFF ) ) << 1 ) >> 1; // signed short
+    calibration.P8 = ( ( ( ( bank1[21] & 0xFF ) << 8 ) + ( bank1[20] & 0xFF ) ) << 1 ) >> 1; // signed short
+    calibration.P9 = ( ( ( ( bank1[23] & 0xFF ) << 8 ) + ( bank1[22] & 0xFF ) ) << 1 ) >> 1; // signed short
+
+    // calculate humidity calibration parameters
+    calibration.H1 = bank1[24] & 0xFF; // unsigned char
+    calibration.H2 = ( ( ( ( bank2[1] & 0xFF ) << 8 ) + ( bank2[0] & 0xFF ) ) << 1 ) >> 1; // signed short
+    calibration.H3 = bank2[2] & 0xFF; // unsigned char
+    calibration.H4 = ( ( ( ( bank2[3] & 0xFF ) << 4 ) + ( bank2[4] & 0xF ) ) << 1 ) >> 1; // signed short
+    calibration.H5 = ( ( ( ( bank2[5] & 0xFF ) << 4 ) + ( ( bank2[4] & 0xFF ) >> 4 ) ) << 1 ) >> 1; // signed short
+    calibration.H6 = bank2[6]; // signed char
 
     System.out.format( "---->>>> T1: %d\n", calibration.T1 );
     System.out.format( "---->>>> T2: %d\n", calibration.T2 );
     System.out.format( "---->>>> T3: %d\n", calibration.T3 );
+    System.out.format( "---->>>> P1: %d\n", calibration.P1 );
+    System.out.format( "---->>>> P2: %d\n", calibration.P2 );
+    System.out.format( "---->>>> P3: %d\n", calibration.P3 );
+    System.out.format( "---->>>> P4: %d\n", calibration.P4 );
+    System.out.format( "---->>>> P5: %d\n", calibration.P5 );
+    System.out.format( "---->>>> P6: %d\n", calibration.P6 );
+    System.out.format( "---->>>> P7: %d\n", calibration.P7 );
+    System.out.format( "---->>>> P8: %d\n", calibration.P8 );
+    System.out.format( "---->>>> P9: %d\n", calibration.P9 );
+    System.out.format( "---->>>> H1: %d\n", calibration.H1 );
+    System.out.format( "---->>>> H2: %d\n", calibration.H2 );
+    System.out.format( "---->>>> H3: %d\n", calibration.H3 );
+    System.out.format( "---->>>> H4: %d\n", calibration.H4 );
+    System.out.format( "---->>>> H5: %d\n", calibration.H5 );
+    System.out.format( "---->>>> H6: %d\n", calibration.H6 );
 
     // The BME280 output consists of the ADC output values. However, each sensing element
     //behaves differently. Therefore, the actual pressure and temperature must be calculated using a

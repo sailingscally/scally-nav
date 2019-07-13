@@ -72,6 +72,16 @@ public class BME280 {
       dig_P9 -= 65536;
     }
 
+    System.out.format( "---->>>> P1: %d\n", dig_P1 );
+    System.out.format( "---->>>> P2: %d\n", dig_P2 );
+    System.out.format( "---->>>> P3: %d\n", dig_P3 );
+    System.out.format( "---->>>> P4: %d\n", dig_P4 );
+    System.out.format( "---->>>> P5: %d\n", dig_P5 );
+    System.out.format( "---->>>> P6: %d\n", dig_P6 );
+    System.out.format( "---->>>> P7: %d\n", dig_P7 );
+    System.out.format( "---->>>> P8: %d\n", dig_P8 );
+    System.out.format( "---->>>> P9: %d\n", dig_P9 );
+
     // Read 1 byte of data from address 0xA1(161)
     int dig_H1 = ( (byte) device.read( 0xA1 ) & 0xFF );
 
@@ -103,6 +113,13 @@ public class BME280 {
     if ( dig_H6 > 127 ) {
       dig_H6 -= 256;
     }
+
+    System.out.format( "---->>>> H1: %d\n", dig_H1 );
+    System.out.format( "---->>>> H2: %d\n", dig_H2 );
+    System.out.format( "---->>>> H3: %d\n", dig_H3 );
+    System.out.format( "---->>>> H4: %d\n", dig_H4 );
+    System.out.format( "---->>>> H5: %d\n", dig_H5 );
+    System.out.format( "---->>>> H6: %d\n", dig_H6 );
 
     // Select control humidity register
     // Humidity over sampling rate = 1
