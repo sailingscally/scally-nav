@@ -38,10 +38,10 @@ public class BME280Data {
       System.out.format( "## Uncalibrated temperature value: %d\n", value );
       System.out.format( "## Uncalibrated temperature value: %d (1/16)\n", value / 16 );
 
-      double var1 = ( value / 16384.0 - calibration.T1 / 1024.0 ) * calibration.T2;
-      double var2 = ( ( value / 131072.0 - calibration.T1 / 8192.0 ) * ( value / 131072.0 - calibration.T1/8192.0 ) )  * calibration.T3;
+      double v1 = ( value / 16384.0 - calibration.T1 / 1024.0 ) * calibration.T2;
+      double v2 = ( ( value / 131072.0 - calibration.T1 / 8192.0 ) * ( value / 131072.0 - calibration.T1/8192.0 ) )  * calibration.T3;
 
-      t_fine = var1 + var2;
+      t_fine = v1 + v2;
       temperature = t_fine / 5120.0;
 
       System.out.format( "## Temperature value: %.2f\n", temperature );
