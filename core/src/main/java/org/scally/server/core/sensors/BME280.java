@@ -140,7 +140,7 @@ public class BME280 {
 
     reset();
 
-    while ( status() != BME280Status.Idle ) {
+    while ( status() != BME280Status.IDLE ) {
       Thread.sleep( 50 );
     }
 
@@ -155,19 +155,19 @@ public class BME280 {
       System.out.format( ">> BME 280 device status: %d [%s]", status, Integer.toHexString( status ) );
 
       if( ( status & STATUS_MEASURING_MASK ) == STATUS_MEASURING_MASK ) {
-        return BME280Status.Measuring;
+        return BME280Status.MEASURING;
       }
 
       if( ( status & STATUS_UPDATING_MASK ) == STATUS_UPDATING_MASK ) {
-        return BME280Status.Updating;
+        return BME280Status.UPDATING;
       }
 
-      return BME280Status.Idle;
+      return BME280Status.IDLE;
     } catch ( IOException e ) {
       e.printStackTrace();
     }
 
-    return BME280Status.Error;
+    return BME280Status.ERROR;
   }
 
   private boolean check() {
