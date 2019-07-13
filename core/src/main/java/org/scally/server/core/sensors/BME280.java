@@ -105,14 +105,6 @@ public class BME280 {
       e.printStackTrace();
     }
 
-    for( int i = 0; i < bank1.length; i ++ ) {
-      System.out.format( "Calibration byte %d: %d [%s]\n", i, bank1[i], Integer.toHexString ( bank1[i] ) );
-    }
-
-    for( int i = 0; i < bank2.length; i ++ ) {
-      System.out.format( "Calibration byte %d: %d [%s]\n", i + bank1.length, bank2[i], Integer.toHexString( bank2[i] ) );
-    }
-
     // calculate temperature calibration parameters
     calibration.T1 = ( ( bank1[1] & 0xFF ) << 8 ) + ( bank1[0] & 0xFF ); // unsigned short
     calibration.T2 = ( ( ( ( bank1[3] & 0xFF ) << 8 ) + ( bank1[2] & 0xFF ) ) << 1 ) >> 1; // signed short
@@ -137,9 +129,6 @@ public class BME280 {
     calibration.H5 = ( ( ( ( bank2[5] & 0xFF ) << 4 ) + ( ( bank2[4] & 0xFF ) >> 4 ) ) << 1 ) >> 1; // signed short
     calibration.H6 = bank2[6]; // signed char
 
-    System.out.format( "---->>>> T1: %d\n", calibration.T1 );
-    System.out.format( "---->>>> T2: %d\n", calibration.T2 );
-    System.out.format( "---->>>> T3: %d\n", calibration.T3 );
     System.out.format( "---->>>> P1: %d\n", calibration.P1 );
     System.out.format( "---->>>> P2: %d\n", calibration.P2 );
     System.out.format( "---->>>> P3: %d\n", calibration.P3 );
@@ -149,12 +138,6 @@ public class BME280 {
     System.out.format( "---->>>> P7: %d\n", calibration.P7 );
     System.out.format( "---->>>> P8: %d\n", calibration.P8 );
     System.out.format( "---->>>> P9: %d\n", calibration.P9 );
-    System.out.format( "---->>>> H1: %d\n", calibration.H1 );
-    System.out.format( "---->>>> H2: %d\n", calibration.H2 );
-    System.out.format( "---->>>> H3: %d\n", calibration.H3 );
-    System.out.format( "---->>>> H4: %d\n", calibration.H4 );
-    System.out.format( "---->>>> H5: %d\n", calibration.H5 );
-    System.out.format( "---->>>> H6: %d\n", calibration.H6 );
 
     // The BME280 output consists of the ADC output values. However, each sensing element
     //behaves differently. Therefore, the actual pressure and temperature must be calculated using a
