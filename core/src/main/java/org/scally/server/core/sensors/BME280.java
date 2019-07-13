@@ -139,11 +139,6 @@ public class BME280 {
     }
 
     reset();
-
-    while ( status() != BME280Status.IDLE ) {
-      Thread.sleep( 50 );
-    }
-
     calibrate();
     init();
   }
@@ -180,9 +175,13 @@ public class BME280 {
     return false;
   }
 
-  private void reset() {
+  private void reset() throws InterruptedException {
     try {
       device.write( RESET_ADDRESS, RESET_VALUE );
+
+      while ( status() != BME280Status.IDLE ) {
+        Thread.sleep( 50 );
+      }
     } catch ( IOException e ) {
       e.printStackTrace();
     }
@@ -198,18 +197,6 @@ public class BME280 {
 
       // 1 second standby time (101), 10 second IIR filter (110) and 3-wire SPI disabled
       device.write( CONFIGURATION_ADDRESS, (byte) 0b10111000 );
-
-
-//      device.write( 0xF2, (byte) 0x01 );
-      // Select control measurement register
-      // Normal mode, temp and pressure over sampling rate = 1
-//      device.write( 0xF4, (byte) 0x27 );
-      // Select config register
-      // Stand_by time = 1000 ms
-//      device.write( 0xF5, (byte) 0xA0 );
-
-
-
     } catch ( IOException e ) {
       e.printStackTrace();
     }
@@ -252,15 +239,11 @@ public class BME280 {
     calibration.H4 = convertToSignedShort( ( ( bank2[3] & 0xFF ) << 4 ) + ( bank2[4] & 0xF ) );
     calibration.H5 = convertToSignedShort( ( ( bank2[5] & 0xFF ) << 4 ) + ( ( bank2[4] & 0xFF ) >> 4 ) );
     calibration.H6 = bank2[6]; // signed char
-
-    System.out.format( "-->> T1: %d\n", calibration.T1 );
-    System.out.format( "-->> T2: %d\n", calibration.T2 );
-    System.out.format( "-->> T3: %d\n", calibration.T3 );
   }
 
   public BME280Data read() throws InterruptedException {
     while ( status() != BME280Status.IDLE ) {
-      Thread.sleep( 10 );
+      Thread.sleep( 50 );
     }
 
     byte[] data = new byte[ DATA_LENGTH ];
@@ -272,65 +255,6 @@ public class BME280 {
     }
 
     return new BME280Data( data, calibration );
-
-
-    // To read out data after a conversion, it is strongly recommended to use a burst read and not
-    // address every register individually. This will prevent a possible mix-up of bytes belonging to
-    // different measurements and reduce interface traffic.
-
-    // Data readout is done by starting a burst read from 0xF7 to 0xFC (temperature and pressure) or
-    // from 0xF7 to 0xFE (temperature, pressure and humidity). The data are read out in an unsigned
-    // 20-bit format both for pressure and for temperature and in an unsigned 16-bit format for humidity.
-
-    // The BME280 output consists of the ADC output values. However, each sensing element
-    //behaves differently. Therefore, the actual pressure and temperature must be calculated using a
-    //set of calibration parameters.
-
-    // The recommended calculation uses fixed point arithmetic and is given in chapter 4.2.3.
-    // In high-level languages like Matlab™ or LabVIEW™, fixed-point code may not be well
-    // supported. In this case the floating-point code in appendix 8.1 can be used as an alternative.
-
-    // Both pressure and temperature values are expected to be received in 20 bit format,
-    // positive, stored in a 32 bit signed integer. Humidity is expected to be received in 16 bit format,
-    // positive, stored in a 32 bit signed integer.
-  }
-
-
-
-  public int t() {
-    // Temperature measurement can be enabled or skipped. Skipping the measurement could be
-    // useful to measure pressure extremely rapidly. When enabled, several oversampling options
-    // exist. The temperature measurement is controlled by the osrs_t[2:0] setting which is detailed in
-    // chapter 5.4.5. For the temperature measurement, oversampling is possible to reduce the noise.
-    // The resolution of the temperature data depends on the IIR filter (see chapter 0) and the
-    // oversampling setting (see chapter 5.4.5):
-    //   - When the IIR filter is enabled, the temperature resolution is 20 bit.
-    //   - When the IIR filter is disabled, the temperature resolution is 16 + (osrs_t – 1) bit, e.g. 18
-    //     bit when osrs_t is set to ‘3’.
-
-    return 0;
-  }
-
-  public int getPressure() {
-    // Pressure measurement can be enabled or skipped. When enabled, several oversampling
-    // options exist. The pressure measurement is controlled by the osrs_p[2:0] setting which is
-    // detailed in chapter 5.4.5. For the pressure measurement, oversampling is possible to reduce
-    // the noise. The resolution of the pressure data depends on the IIR filter (see chapter 0) and the
-    // oversampling setting (see chapter 5.4.5):
-    //   - When the IIR filter is enabled, the pressure resolution is 20 bit.
-    //   - When the IIR filter is disabled, the pressure resolution is 16 + (osrs_p – 1) bit, e.g. 18 bit
-    //     when osrs_p is set to ‘3’.
-
-    return 0;
-  }
-
-  public int getHumidity() {
-    // The humidity measurement can be enabled or skipped. When enabled, several oversampling
-    // options exist. The humidity measurement is controlled by the osrs_h[2:0] setting, which is
-    // detailed in chapter 5.4.3. For the humidity measurement, oversampling is possible to reduce the
-    // noise. The resolution of the humidity measurement is fixed at 16 bit ADC output.
-
-    return 0;
   }
 
   private int convertToUnsignedShort( byte msb, byte lsb ) {
