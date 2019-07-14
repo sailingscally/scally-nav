@@ -50,7 +50,7 @@ public class BME280 {
    */
   public static final int STATUS_ADDRESS = 0xF3;
   public static final int STATUS_UPDATING_MASK = 0x01; // mask for bit 0
-  public static final int STATUS_MEASURING_MASK = 0x04; // mask for bit 3
+  public static final int STATUS_MEASURING_MASK = 0x08; // mask for bit 3
 
   /**
    * Calibration data for temperature, pressure and humidity is found in two memory banks:
@@ -195,8 +195,8 @@ public class BME280 {
       // temperature oversampling = 1x (001), pressure oversampling = 1x (001), normal mode (11)
       device.write( CONTROL_PRESSURE_TEMPERATURE_ADDRESS, (byte) 0b00100111 );
 
-      // 1 second standby time (101), 10 second IIR filter (110) and 3-wire SPI disabled
-      device.write( CONFIGURATION_ADDRESS, (byte) 0b10111000 );
+      // 1 second standby time (101), 1 second IIR filter (110) and 3-wire SPI disabled
+      device.write( CONFIGURATION_ADDRESS, (byte) 0b10110100 );
     } catch ( IOException e ) {
       e.printStackTrace();
     }
@@ -241,9 +241,9 @@ public class BME280 {
     calibration.H6 = bank2[6]; // signed char
   }
 
-  public BME280Data read() throws InterruptedException {
+  public  BME280Data read() throws InterruptedException {
     while ( status() != BME280Status.IDLE ) {
-      Thread.sleep( 50 );
+      Thread.sleep( 100 );
     }
 
     byte[] data = new byte[ DATA_LENGTH ];

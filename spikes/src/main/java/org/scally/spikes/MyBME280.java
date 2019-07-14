@@ -12,9 +12,9 @@ public class MyBME280 {
     while( true ) {
       BME280Data data = bme280.read();
 
-      System.out.printf( "Temperature in Celsius : %.2f C %n", data.getTemperature() );
+      System.out.printf( "Temperature in Celsius : %.1f C %n", data.getTemperature() );
       System.out.printf( "Pressure : %.2f hPa %n", data.getPressure() );
-      System.out.printf( "Relative Humidity : %.2f %% RH %n", data.getHumidity() );
+      System.out.printf( "Relative Humidity : %.1f %% RH %n", data.getHumidity() );
       System.out.println();
 
       Thread.sleep( 10000 );
