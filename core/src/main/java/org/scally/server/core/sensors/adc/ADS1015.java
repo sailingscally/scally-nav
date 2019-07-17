@@ -18,6 +18,11 @@ public class ADS1015 {
    */
   public static final int I2C_ADDRESS = 0x48;
 
+  /**
+   * The ADS1015 contains two 16 bit registers:
+   *   - 0b00 is the conversion register where data is stored after an ADC operation
+   *   - 0b01 is the configuration register
+   */
   public static final int CONVERSION_REGISTER = 0b00;
   public static final int CONFIG_REGISTER = 0b01;
 
@@ -83,7 +88,7 @@ public class ADS1015 {
       e.printStackTrace();
     }
 
-    Thread.sleep( CONVERSION_DELAY ); // wait for the conversion to complete
+    Thread.sleep( CONVERSION_DELAY * 1000 ); // wait for the conversion to complete
 
     byte[] data = new byte[2];
 
