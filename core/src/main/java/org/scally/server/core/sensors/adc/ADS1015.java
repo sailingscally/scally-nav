@@ -67,13 +67,12 @@ public class ADS1015 {
     byte options = (byte) ( BEGIN_SINGLE_CONVERSION | channel.getValue() | gain.getGain() | Mode.SINGLE.getValue() );
 
     try {
-      device.write( Pointer.CONFIG_REGISTER.getAddress(), new byte[] { options, DEFAULT_OPTIONS } );
+      device.write( Pointer.CONFIG_REGISTER.getAddress(), new byte[] { options, DEFAULT_OPTIONS }, 0, 2 ); // write two bytes
     } catch ( IOException e ) {
       e.printStackTrace();
     }
 
-    // wait for the conversion to complete
-    Thread.sleep( CONVERSION_DELAY );
+    Thread.sleep( CONVERSION_DELAY ); // wait for the conversion to complete
 
     byte[] data = new byte[2];
 
@@ -84,10 +83,8 @@ public class ADS1015 {
     }
 
     // reading a value from a single ended input will always read a positive value
-    return ( ( ( data[1] & 0xFF ) << 4 ) + ( ( data[0] & 0xFF ) >> 4 ) ) * gain.getValue();
-
-    //    int value = ( ( data[1] & 0xFF ) << 4 ) + ( ( data[0] & 0xFF ) >> 4 );
-    //    return ( value > 0x7FFF ? value - 0x10000 : value ) * gain.getValue();
+    int value = ( data[0] & 0xFF ) << 4 | ( data[1] & 0xFF ) >> 4;
+    return value / 2048.0 * gain.getFullScale(); // 2048 bits value since the first bit is the sign bit
   }
 
   public int readDifferential( Differential differential ) {
