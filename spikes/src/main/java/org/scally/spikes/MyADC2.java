@@ -4,13 +4,24 @@ import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
-public class adc {
+public class MyADC2 {
 
   public static void main( String[] args ) throws Exception {
+    System.out.println( "---- Channel #0 ----" );
+    read( (byte) 0b01000000 );
+    System.out.println( "---- Channel #1 ----" );
+    read( (byte) 0b01010000 );
+    System.out.println( "---- Channel #2 ----" );
+    read( (byte) 0b01100000 );
+    System.out.println( "---- Channel #3 ----" );
+    read( (byte) 0b01110000 );
+  }
+
+  private static void read( byte channel ) throws Exception {
     I2CBus bus = I2CFactory.getInstance( I2CBus.BUS_1 );
     I2CDevice device = bus.getDevice( 0x48 );
 
-    byte options = (byte) ( (byte) 0b10000000 | (byte) 0b01010000 | (byte) 0b00000010 | (byte) 0b1 ); // begin / channel 1, gain = 1, single
+    byte options = (byte) ( (byte) 0b10000000 | channel | (byte) 0b00000010 | (byte) 0b1 ); // begin / channel 1, gain = 1, single
     byte defaults = (byte) 0b00000011; // 128 sps / traditional comp / active low / non latching / disable comp
 
     System.out.format( "Configuration register: 0b%s%s [write]\n", Integer.toBinaryString( options & 0xFF ), Integer.toBinaryString( defaults & 0xFF ) );
