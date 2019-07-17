@@ -18,6 +18,10 @@ public class ADS1015 {
    */
   public static final int I2C_ADDRESS = 0x48;
 
+  public static final int CONVERSION_REGISTER = 0b00;
+  public static final int CONFIG_REGISTER = 0b01;
+
+
   /**
    * The ADS1015 has a conversion delay of 1ms.
    * We can afford to wait for a little longer and be sure the conversion has finished.
@@ -66,42 +70,31 @@ public class ADS1015 {
   public double readSingleEnded( Channel channel, Gain gain ) throws InterruptedException {
     byte options = (byte) ( BEGIN_SINGLE_CONVERSION | channel.getValue() | gain.getGain() | Mode.SINGLE.getValue() );
 
-    System.out.format( "Configuration register: 0b%s%s [write]\n", Integer.toBinaryString( options & 0xFF ), Integer.toBinaryString( DEFAULT_OPTIONS & 0xFF ) );
-    System.out.format( "Configuration register: 0x%s%s [write]\n", Integer.toHexString( options & 0xFF ), Integer.toHexString( DEFAULT_OPTIONS & 0xFF ) );
-
     try {
-      device.write( Pointer.CONFIG_REGISTER.getAddress(), new byte[] { options, DEFAULT_OPTIONS }, 0, 2 ); // write two bytes
+      device.write( CONFIG_REGISTER, new byte[] { options, DEFAULT_OPTIONS }, 0, 2 ); // write two bytes
     } catch ( IOException e ) {
       e.printStackTrace();
     }
-/*
+
     try {
       byte[] config = new byte[2];
-      device.read( 0x01, config, 0, config.length );
-      System.out.format( "Configuration register: 0b%s%s [read]\n", Integer.toBinaryString( config[0] & 0xFF ), Integer.toBinaryString( config[1] & 0xFF ) );
-      System.out.format( "Configuration register: 0x%s%s [read]\n", Integer.toHexString( config[0] & 0xFF ), Integer.toHexString( config[1] & 0xFF ) );
+      device.read( CONFIG_REGISTER, config, 0, config.length ); // read configuration register back or it will fail to work properly
     } catch ( IOException e ) {
       e.printStackTrace();
     }
-*/
 
     Thread.sleep( CONVERSION_DELAY ); // wait for the conversion to complete
-    System.out.println();
 
     byte[] data = new byte[2];
 
     try {
-      device.read( Pointer.CONVERSION_REGISTER.getAddress(), data, 0, data.length );
+      device.read( CONVERSION_REGISTER, data, 0, data.length );
     } catch ( IOException e ) {
       e.printStackTrace();
     }
 
-    System.out.format( "Conversion register: 0x%s%s\n", Integer.toHexString( data[0] & 0xFF ), Integer.toHexString( data[1] & 0xFF ) );
-
     // reading a value from a single ended input will always read a positive value
     int value = ( data[0] & 0xFF ) << 4 | ( data[1] & 0xFF ) >> 4;
-    System.out.format( "Raw ADC value: %d\n", value );
-    System.out.format( "Voltage: %.2f\n", value / 2048.0 * gain.getFullScale() );
     return value / 2048.0 * gain.getFullScale(); // 11 bits value since the first bit is the sign bit
   }
 
