@@ -84,7 +84,7 @@ public class ADS1015 {
 
     // reading a value from a single ended input will always read a positive value
     int value = ( data[0] & 0xFF ) << 4 | ( data[1] & 0xFF ) >> 4;
-    return value / 2048.0 * gain.getFullScale(); // 2048 bits value since the first bit is the sign bit
+    return value / 2048.0 * gain.getFullScale(); // 11 bits value since the first bit is the sign bit
   }
 
   public int readDifferential( Differential differential ) {
