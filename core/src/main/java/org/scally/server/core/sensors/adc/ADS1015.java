@@ -74,7 +74,7 @@ public class ADS1015 {
     } catch ( IOException e ) {
       e.printStackTrace();
     }
-
+/*
     try {
       byte[] config = new byte[2];
       device.read( 0x01, config, 0, config.length );
@@ -83,7 +83,7 @@ public class ADS1015 {
     } catch ( IOException e ) {
       e.printStackTrace();
     }
-
+*/
 
     Thread.sleep( CONVERSION_DELAY ); // wait for the conversion to complete
     System.out.println();
