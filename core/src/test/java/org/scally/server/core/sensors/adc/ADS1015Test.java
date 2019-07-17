@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -40,6 +41,7 @@ public class ADS1015Test {
 
     ads.readSingleEnded( Channel.ONE, Gain.TWO_THIRDS );
     verify( device, times( 1 ) ).write( (byte) 0b01, new byte[] { (byte) 0b11010001, (byte) 0b00000011 }, 0, 2 );
+    verify( device, times( 2 ) ).read( anyInt(), any( byte[].class ), anyInt(), anyInt() );
   }
 
   @Test
@@ -47,6 +49,7 @@ public class ADS1015Test {
     doCallRealMethod().when( ads ).readSingleEnded( any( Channel.class ), any( Gain.class ) );
 
     ads.readSingleEnded( Channel.THREE, Gain.TWO );
-    verify( device, times( 1 ) ).write( (byte) 0b01, new byte[] { (byte) 0b11110101, 0b00000011 }, 0, 2 );
+    verify( device, times( 1 ) ).write( (byte) 0b01, new byte[] { (byte) 0b11110101, (byte) 0b00000011 }, 0, 2 );
+    verify( device, times( 2 ) ).read( anyInt(), any( byte[].class ), anyInt(), anyInt() );
   }
 }
