@@ -6,6 +6,13 @@ import com.pi4j.io.i2c.I2CFactory;
 
 import java.io.IOException;
 
+/**
+ * Datasheet can be found at: https://www.embeddedadventures.com/datasheets/BME280.pdf
+ *
+ * Portions of this have been ported from:
+ *   - https://github.com/BoschSensortec/BME280_driver/blob/master/bme280.c
+ *   - https://github.com/adafruit/Adafruit_BME280_Library/blob/master/Adafruit_BME280.cpp
+ */
 public class BME280 {
 
   /**
@@ -123,18 +130,18 @@ public class BME280 {
 
   private BME280Calibration calibration = new BME280Calibration();
 
-  public BME280( /* I2C */ ) throws InterruptedException, I2CFactory.UnsupportedBusNumberException, BME280NotFoundException {
+  public BME280( /* I2C */ ) throws InterruptedException, I2CFactory.UnsupportedBusNumberException, DeviceNotFoundException {
     // TODO: store I2C wrapper for thread safe usage
 
     try {
       bus = I2CFactory.getInstance( I2CBus.BUS_1 );
       device = bus.getDevice( I2C_ADDRESS );
     } catch ( IOException e ) {
-      throw new BME280NotFoundException( String.format( "BME 280 sensor not found at address 0x%s.", Integer.toHexString( I2C_ADDRESS ) ), e );
+      throw new DeviceNotFoundException( String.format( "BME 280 sensor not found at address 0x%s.", Integer.toHexString( I2C_ADDRESS ) ), e );
     }
 
     if( !check() ) {
-      throw new BME280NotFoundException( String.format( "BME 280 sensor with ID 0x%s not found at address 0x%s.",
+      throw new DeviceNotFoundException( String.format( "BME 280 sensor with ID 0x%s not found at address 0x%s.",
         Integer.toHexString( CHIP_ID_VALUE ), Integer.toHexString( I2C_ADDRESS ) ) );
     }
 
@@ -265,7 +272,7 @@ public class BME280 {
     return convertToSignedShort( convertToUnsignedShort( msb, lsb ) );
   }
 
-  private int convertToSignedShort( int value) {
+  private int convertToSignedShort( int value ) {
     return value > 0x7FFF ? value - 0x10000 : value;
   }
 }
