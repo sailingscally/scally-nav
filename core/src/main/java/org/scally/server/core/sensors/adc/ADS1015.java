@@ -31,7 +31,7 @@ public class ADS1015 {
    * The ADS1015 has a conversion delay of 1ms.
    * We can afford to wait for a little longer and be sure the conversion has finished.
    */
-  public static final int CONVERSION_DELAY = 5;
+  public static final int CONVERSION_DELAY = 5000;
 
   /**
    * These are the LSB of the 16 bit config register and represent:
@@ -81,14 +81,7 @@ public class ADS1015 {
       e.printStackTrace();
     }
 
-    try {
-      byte[] config = new byte[2];
-      device.read( CONFIG_REGISTER, config, 0, config.length ); // read configuration register back or it will fail to work properly
-    } catch ( IOException e ) {
-      e.printStackTrace();
-    }
-
-    Thread.sleep( CONVERSION_DELAY * 1000 ); // wait for the conversion to complete
+    Thread.sleep( CONVERSION_DELAY ); // wait for the conversion to complete
 
     byte[] data = new byte[2];
 
