@@ -39,7 +39,7 @@ public class ADS1015Test {
     doCallRealMethod().when( ads ).readSingleEnded( any( Channel.class ), any( Gain.class ) );
 
     ads.readSingleEnded( Channel.ONE, Gain.TWO_THIRDS );
-    verify( device, times( 1 ) ).write( (byte) 0b01, new byte[] { (byte) 0b11010001, 0b00000011 } );
+    verify( device, times( 1 ) ).write( (byte) 0b01, new byte[] { (byte) 0b11010001, (byte) 0b00000011 }, 0, 2 );
   }
 
   @Test
@@ -47,6 +47,6 @@ public class ADS1015Test {
     doCallRealMethod().when( ads ).readSingleEnded( any( Channel.class ), any( Gain.class ) );
 
     ads.readSingleEnded( Channel.THREE, Gain.TWO );
-    verify( device, times( 1 ) ).write( (byte) 0b01, new byte[] { (byte) 0b11110101, 0b00000011 } );
+    verify( device, times( 1 ) ).write( (byte) 0b01, new byte[] { (byte) 0b11110101, 0b00000011 }, 0, 2 );
   }
 }

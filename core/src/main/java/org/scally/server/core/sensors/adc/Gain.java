@@ -22,6 +22,7 @@ public enum Gain {
   Gain( double value, byte gain, double fs ) {
     this.value = value;
     this.gain = gain;
+    this.fs = fs;
   }
 
   public double getValue() {
