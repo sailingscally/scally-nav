@@ -2,11 +2,14 @@ package org.scally.spikes;
 
 import org.scally.server.core.sensors.adc.ADS1015;
 import org.scally.server.core.sensors.adc.Channel;
+import org.scally.server.core.sensors.adc.Gain;
 
 public class MyADS1015 {
 
   public static void main( String[] args ) throws Exception {
     ADS1015 ads = new ADS1015();
+    ads.setGain( Gain.ONE );
+
     double v0 = ads.readSingleEnded( Channel.ZERO );
     double v1 = ads.readSingleEnded( Channel.ONE );
     double v2 = ads.readSingleEnded( Channel.TWO );
