@@ -1,4 +1,4 @@
-package org.scally.server;
+package org.scally.server.tcp;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,17 +9,17 @@ import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAsync
-public class TcpServerHandlerConfiguration {
+public class BroadcastHandlerConfiguration {
 
-  @Bean( name = "tcpServerHandler")
-  public Executor tcpServerHandler() {
+  @Bean( name = "broadcast")
+  public Executor getExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setThreadNamePrefix("broadcast-");
+    executor.setDaemon( false );
     executor.setCorePoolSize( 20 );
     executor.setMaxPoolSize( 20 );
     executor.setQueueCapacity( 10 );
     executor.setKeepAliveSeconds( 60 );
-    executor.setDaemon( false );
-    executor.setThreadNamePrefix("TcpServerHandler-");
     executor.initialize();
 
     return executor;

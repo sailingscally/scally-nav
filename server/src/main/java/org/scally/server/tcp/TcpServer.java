@@ -1,4 +1,4 @@
-package org.scally.server;
+package org.scally.server.tcp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -17,6 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class TcpServer {
 
+  private static final int SERVER_PORT = 8085;
+  private static final String NEW_LINE = "\r\n";
+
   @Autowired
   private TcpServerHandler handler;
 
@@ -25,9 +28,9 @@ public class TcpServer {
 
   @Async
   public void run() {
-    try ( ServerSocket server = new ServerSocket( 8085 ) ) {
+    try ( ServerSocket server = new ServerSocket( SERVER_PORT ) ) {
       while ( true ) {
-        System.out.println("Waiting for client on port " + server.getLocalPort() + "...");
+        System.out.println("Waiting for clients on port " + server.getLocalPort() + "...");
         handler.handle( server.accept(), this );
       }
     } catch ( IOException e ) {
@@ -44,12 +47,20 @@ public class TcpServer {
   }
 
   public void notifyListeners( String message ) {
+    notifyListeners( message, null );
+  }
+
+  public void notifyListeners( String message, SocketAddress listener ) {
     for( SocketAddress key : listeners.keySet() ) {
+      if( key.equals( listener ) ) {
+        continue;
+      }
+
       Socket socket = listeners.get( key );
 
       try {
         BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( socket.getOutputStream() ) );
-        writer.write( message + "\r\n" /* System.lineSeparator() */ );
+        writer.write( message + NEW_LINE ); // must use '\r\n' since the client system is unknown
         writer.flush();
       } catch ( IOException e ) {
         e.printStackTrace();

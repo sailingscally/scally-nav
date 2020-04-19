@@ -1,4 +1,4 @@
-package org.scally.server;
+package org.scally.server.http.messages;
 
 public class Greeting {
 

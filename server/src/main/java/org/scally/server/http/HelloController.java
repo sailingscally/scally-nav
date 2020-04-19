@@ -1,5 +1,6 @@
-package org.scally.server;
+package org.scally.server.http;
 
+import org.scally.server.http.messages.Greeting;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

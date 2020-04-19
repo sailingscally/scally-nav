@@ -1,4 +1,4 @@
-package org.scally.server;
+package org.scally.server.tcp;
 
 import java.net.Socket;
 
