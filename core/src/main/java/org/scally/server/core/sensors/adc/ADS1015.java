@@ -73,6 +73,22 @@ public class ADS1015 {
   }
 
   public double readSingleEnded( Channel channel, Gain gain ) throws InterruptedException {
+    double value = readVoltage( channel, gain );
+
+    // reading a value from a single ended input will always read a positive value
+    // however, because of device offset, the ADS1015 can still output negative values
+    return value < 0.0 ? 0.0 : value;
+  }
+
+  public double readDifferential( Channel channel )throws InterruptedException {
+    return readDifferential( channel, gain );
+  }
+
+  public double readDifferential( Channel channel, Gain gain )throws InterruptedException {
+    return readVoltage( channel, gain );
+  }
+
+  private double readVoltage( Channel channel, Gain gain ) throws InterruptedException {
     byte options = (byte) ( BEGIN_SINGLE_CONVERSION | channel.getValue() | gain.getGain() | Mode.SINGLE.getValue() );
 
     try {
@@ -91,7 +107,6 @@ public class ADS1015 {
       e.printStackTrace();
     }
 
-    // reading a value from a single ended input will always read a positive value
     int value = ( data[0] & 0xFF ) << 4 | ( data[1] & 0xFF ) >> 4;
 
     if( ( value & 0x800 ) != 0 ) { // check for sign bit (this is a two's complement)
@@ -99,10 +114,6 @@ public class ADS1015 {
     }
 
     return value / 2048.0 * gain.getFullScale(); // 11 bits value since the first bit is the sign bit
-  }
-
-  public int readDifferential( Differential differential ) {
-    return 0;
   }
 
   public void setGain( Gain gain ) {

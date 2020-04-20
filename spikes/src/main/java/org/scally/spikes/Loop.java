@@ -1,14 +1,18 @@
 package org.scally.spikes;
 
+import org.scally.server.core.sensors.BME280;
+import org.scally.server.core.sensors.BME280Data;
 import org.scally.server.core.sensors.adc.ADS1015;
 import org.scally.server.core.sensors.adc.Channel;
 import org.scally.server.core.sensors.adc.Gain;
 
-public class MyADS1015 {
+public class Loop {
 
   public static void main( String[] args ) throws Exception {
     ADS1015 ads = new ADS1015();
     ads.setGain( Gain.ONE );
+
+    BME280 bme280 = new BME280();
 
     while( true ) {
       double v0 = ads.readSingleEnded( Channel.ZERO );
@@ -27,7 +31,14 @@ public class MyADS1015 {
       System.out.format( ">> v23: %.2f\n", v23 );
       System.out.println();
 
-      Thread.sleep( 10000 );
+      BME280Data data = bme280.read();
+
+      System.out.printf( "Temperature in Celsius : %.1f C %n", data.getTemperature() );
+      System.out.printf( "Pressure : %.2f hPa %n", data.getPressure() );
+      System.out.printf( "Relative Humidity : %.1f %% RH %n", data.getHumidity() );
+      System.out.println();
+
+      Thread.sleep( 5000 );
     }
   }
 }
