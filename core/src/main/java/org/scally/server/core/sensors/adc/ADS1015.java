@@ -93,6 +93,11 @@ public class ADS1015 {
 
     // reading a value from a single ended input will always read a positive value
     int value = ( data[0] & 0xFF ) << 4 | ( data[1] & 0xFF ) >> 4;
+
+    if( ( value & 0x800 ) != 0 ) { // check for sign bit (this is a two's complement)
+      value -= 1 << 12;
+    }
+
     return value / 2048.0 * gain.getFullScale(); // 11 bits value since the first bit is the sign bit
   }
 
