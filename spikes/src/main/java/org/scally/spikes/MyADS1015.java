@@ -10,14 +10,19 @@ public class MyADS1015 {
     ADS1015 ads = new ADS1015();
     ads.setGain( Gain.ONE );
 
-    double v0 = ads.readSingleEnded( Channel.ZERO );
-    double v1 = ads.readSingleEnded( Channel.ONE );
-    double v2 = ads.readSingleEnded( Channel.TWO );
-    double v3 = ads.readSingleEnded( Channel.THREE );
+    while( true ) {
+      double v0 = ads.readSingleEnded( Channel.ZERO );
+      double v1 = ads.readSingleEnded( Channel.ONE );
+      double v2 = ads.readSingleEnded( Channel.TWO );
+      double v3 = ads.readSingleEnded( Channel.THREE );
 
-    System.out.format( ">> v0: %.2f\n", v0 );
-    System.out.format( ">> v1: %.2f\n", v1 );
-    System.out.format( ">> v2: %.2f\n", v2 );
-    System.out.format( ">> v3: %.2f\n", v3 );
+      System.out.format( ">> v0: %.2f\n", v0 );
+      System.out.format( ">> v1: %.2f\n", v1 );
+      System.out.format( ">> v2: %.2f\n", v2 );
+      System.out.format( ">> v3: %.2f\n", v3 );
+      System.out.println();
+
+      Thread.sleep( 10000 );
+    }
   }
 }
