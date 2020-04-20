@@ -20,8 +20,8 @@ public class Loop {
       double v2 = ads.readSingleEnded( Channel.TWO );
       double v3 = ads.readSingleEnded( Channel.THREE );
 
-      double v01 = ads.readSingleEnded( Channel.ZERO_ONE );
-      double v23 = ads.readSingleEnded( Channel.TWO_THREE );
+      double v01 = ads.readDifferential( Channel.ZERO_ONE );
+      double v23 = ads.readDifferential( Channel.TWO_THREE );
 
       System.out.format( ">> v0: %.2f\n", v0 );
       System.out.format( ">> v1: %.2f\n", v1 );
