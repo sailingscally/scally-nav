@@ -41,6 +41,11 @@ public class MyADC2 {
     System.out.format( "Conversion register: 0x%s%s\n", Integer.toHexString( data[0] & 0xFF ), Integer.toHexString( data[1] & 0xFF ) );
 
     int value = ( data[0] & 0xFF ) << 4 | ( data[1] & 0xFF ) >> 4;
+
+    if( ( value & 0x800 ) != 0 ) { // check for sign bit (this is a two's complement)
+      value -= 1 << 12;
+    }
+
     System.out.format( "Raw ADC value: %d\n", value );
 
     double voltage = value / 2048.0 * 4.096;
