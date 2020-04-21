@@ -10,13 +10,13 @@ import java.io.IOException;
 public class Pixels {
   public static void main(String[] args) throws IOException {
     Display disp = new Display(128, 32, GpioFactory.getInstance(),
-      SpiFactory.getInstance(SpiChannel.CS0, 8000000), RaspiPin.GPIO_05, RaspiPin.GPIO_04);
+      SpiFactory.getInstance(SpiChannel.CS1, 8000000), RaspiPin.GPIO_05, RaspiPin.GPIO_04);
 
     disp.begin();
 
     long last, nano = 0;
 
-    for(int x = 0; x < 128; x++) {
+    for(int x = 0; x < 32; x++) {
       for (int y = 0; y < 32; y++) {
         disp.setPixel(x, y, true);
         last = System.nanoTime();
