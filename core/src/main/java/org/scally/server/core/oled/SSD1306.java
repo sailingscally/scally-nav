@@ -244,7 +244,7 @@ public class SSD1306 {
     this.command( width - 1 );
     this.command( SET_PAGE_ADDRESS );
     this.command( y );
-    this.command( pages - 1 );
+    this.command( y + pages - 1 );
 
     data( buffer );
   }

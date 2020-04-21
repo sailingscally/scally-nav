@@ -40,13 +40,12 @@ public class MySSD1306 {
       0x76, 0x76, 0x77, 0x72, 0x72, 0x50, 0x70, 0x78, 0x78, 0x3C, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    byte[] buffer = display.getBuffer();
+    byte[] buffer = new byte[ image.length ];
 
     for( int i = 0; i < image.length; i ++ ) {
       buffer[i] = (byte) image[i];
     }
 
-    display.setBuffer( buffer );
-    display.display();
+    display.display( buffer, 48, 0, 32, 32 / 8 );
   }
 }
