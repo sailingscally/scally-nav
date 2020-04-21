@@ -29,5 +29,11 @@ public class MySSD1306 {
     SSD1306 display = new SSD1306();
     // display.clear();
     display.display();
+
+    byte[] buffer = display.getBuffer();
+    buffer[0] = 0b00000001;
+
+    display.setBuffer( buffer );
+    display.display();
   }
 }

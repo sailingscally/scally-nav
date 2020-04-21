@@ -167,7 +167,7 @@ public class SSD1306 {
     command( DEFAULT_VCOMH_DESELECT_LEVEL );
 
     command( SET_DISPLAY_ON_RESUME );
-    command( SET_INVERSE_DISPLAY );
+    command( SET_NORMAL_DISPLAY );
 
     command( SET_DISPLAY_ON );
   }
