@@ -241,7 +241,7 @@ public class SSD1306 {
     this.command( pages - 1 );
 
     for( int i = 0; i < buffer.length; i ++ ) {
-      buffer[i] = (byte) 0xFF;
+      buffer[i] = i % 2 == 0 ? (byte) 0xFF : (byte) 0x00;
     }
 
     data( buffer );
