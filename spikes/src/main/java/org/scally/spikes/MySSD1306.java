@@ -65,6 +65,16 @@ public class MySSD1306 {
       }
     }
 
+    for(int y = 0; y < display.getHeight(); y ++) {
+      for(int x = 0; x < display.getWidth(); x ++) {
+        display.point( x, y, true );
+        display.display();
 
+        System.out.format( "x: %d, y: %d\n", x, y );
+        Thread.sleep( 10 );
+      }
+    }
+
+    display.display( buffer, 48, 0, 32, 32 / 8 );
   }
 }

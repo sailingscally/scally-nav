@@ -255,7 +255,15 @@ public class SSD1306 {
 
   public void point( int x, int y, boolean clear ) {
     int page = y / 8;
-    buffer[ x + page * width ] |= (byte) ( 0x01 << y % 8 );
+    byte value = (byte) ( 0x01 << y % 8 );
+
+    int i = x + page * width;
+
+    if( clear ) {
+      buffer[i] |= value;
+    } else {
+      buffer[i] &= ~value;
+    }
   }
 
   public byte[] getBuffer() {
