@@ -48,9 +48,20 @@ public class MySSD1306 {
 
     display.display( buffer, 48, 0, 32, 32 / 8 );
 
-    while( true ) {
+    for( int i = 0; i < 5; i ++ ) {
+      Thread.sleep( 1000 );
       display.invert();
       Thread.sleep( 1000 );
+      display.normal();
     }
+
+    for(int i = 0; i < display.getWidth(); i ++) {
+      for(int j = 0; j < display.getHeight(); j ++) {
+        display.point( i, j );
+        Thread.sleep( 50 );
+      }
+    }
+
+
   }
 }

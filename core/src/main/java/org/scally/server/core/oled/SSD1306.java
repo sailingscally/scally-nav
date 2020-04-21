@@ -81,8 +81,6 @@ public class SSD1306 {
   private int width;
   private int height;
 
-  private boolean inverted = false;
-
   private int pages;
   private byte[] buffer;
 
@@ -185,8 +183,11 @@ public class SSD1306 {
   }
 
   public void invert() throws IOException {
-    command( inverted ? SET_INVERSE_DISPLAY : SET_NORMAL_DISPLAY );
-    inverted = !inverted;
+    command( SET_INVERSE_DISPLAY );
+  }
+
+  public void normal() throws IOException {
+    command( SET_NORMAL_DISPLAY );
   }
 
   public void shutdown() {
@@ -246,6 +247,15 @@ public class SSD1306 {
     this.command( y + pages - 1 );
 
     write( buffer );
+  }
+
+  public void point( int x, int y ) {
+    point( x, y, false );
+  }
+
+  public void point( int x, int y, boolean clear ) {
+    int page = y / 8;
+    buffer[ x * page ] |= (byte) ( 0x01 << y % 8 );
   }
 
   public byte[] getBuffer() {
