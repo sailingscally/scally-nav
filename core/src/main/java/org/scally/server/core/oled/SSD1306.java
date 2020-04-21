@@ -259,7 +259,7 @@ public class SSD1306 {
 
     int i = x + page * width;
 
-    if( clear ) {
+    if( !clear ) {
       buffer[i] |= value;
     } else {
       buffer[i] &= ~value;
