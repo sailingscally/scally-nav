@@ -204,15 +204,7 @@ public class SSD1306 {
   /**
    * Sends data to the OLED display, to send data the D/C pin must be HIGH.
    */
-  private void data( int data ) throws IOException {
-    dc.high();
-    spi.write( (short) data) ;
-  }
-
-  /**
-   * Sends data to the OLED display, to send data the D/C pin must be HIGH.
-   */
-  private void data( byte[] data ) throws IOException {
+  private void write( byte[] data ) throws IOException {
     dc.high();
     spi.write( data );
   }
@@ -248,12 +240,12 @@ public class SSD1306 {
   public synchronized void display( byte[] buffer, int x, int y, int width, int pages ) throws IOException {
     this.command( SET_COLUMN_ADDRESS );
     this.command( x );
-    this.command( width - 1 );
+    this.command( x + width - 1 );
     this.command( SET_PAGE_ADDRESS );
     this.command( y );
     this.command( y + pages - 1 );
 
-    data( buffer );
+    write( buffer );
   }
 
   public byte[] getBuffer() {
