@@ -225,11 +225,25 @@ public class SSD1306 {
    * of the display to be updated.
    */
   public synchronized void display() throws IOException {
+    display( buffer, 0, 0, width, pages );
+  }
+
+  /**
+   * Sends the given array of bytes to the OLED screen, allowing for an efficient method of updating small portions
+   * of the screen without re-writing the entire screen.
+   *
+   * @param buffer The array of data to render to the OLED display
+   * @param x The horizontal offset from where to start drawing
+   * @param y The vertical offset in pages (8 pixels high) from where to start drawing
+   * @param width The with of the data to render in pixels
+   * @param pages The height of the data to render in pages (8 pixels high)
+   */
+  public synchronized void display( byte[] buffer, int x, int y, int width, int pages ) throws IOException {
     this.command( SET_COLUMN_ADDRESS );
-    this.command( 0 );
+    this.command( x );
     this.command( width - 1 );
     this.command( SET_PAGE_ADDRESS );
-    this.command( 0 );
+    this.command( y );
     this.command( pages - 1 );
 
     data( buffer );
