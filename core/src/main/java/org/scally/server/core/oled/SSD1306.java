@@ -12,8 +12,6 @@ import com.pi4j.io.spi.SpiFactory;
 import org.scally.server.core.DeviceInitializationException;
 import org.scally.server.core.DeviceNotFoundException;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class SSD1306 {
@@ -86,9 +84,6 @@ public class SSD1306 {
   private int pages;
   private byte[] buffer;
 
-  protected BufferedImage image;
-  protected Graphics2D graphics;
-
   GpioController gpio;
   private GpioPinDigitalOutput dc;
   private GpioPinDigitalOutput rst;
@@ -109,9 +104,6 @@ public class SSD1306 {
 
     pages = height / 8;
     buffer = new byte[ width * pages ];
-
-    image = new BufferedImage( width, height, BufferedImage.TYPE_BYTE_BINARY );
-    graphics = image.createGraphics();
 
     gpio = GpioFactory.getInstance();
     this.dc = gpio.provisionDigitalOutputPin( dc, "DC", PinState.LOW ); // start in command mode
@@ -197,7 +189,7 @@ public class SSD1306 {
   /**
    * Sends a command to the OLED display, to send a command the D/C pin must be LOW.
    */
-  public void command( int command ) throws IOException {
+  private void command( int command ) throws IOException {
     dc.low();
     spi.write( (short) command );
   }
@@ -205,7 +197,7 @@ public class SSD1306 {
   /**
    * Sends data to the OLED display, to send data the D/C pin must be HIGH.
    */
-  public void data( int data ) throws IOException {
+  private void data( int data ) throws IOException {
     dc.high();
     spi.write( (short) data) ;
   }
@@ -213,7 +205,7 @@ public class SSD1306 {
   /**
    * Sends data to the OLED display, to send data the D/C pin must be HIGH.
    */
-  public void data( byte[] data ) throws IOException {
+  private void data( byte[] data ) throws IOException {
     dc.high();
     spi.write( data );
   }
