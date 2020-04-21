@@ -55,10 +55,12 @@ public class MySSD1306 {
       display.normal();
     }
 
-    for(int i = 0; i < display.getWidth(); i ++) {
-      for(int j = 0; j < display.getHeight(); j ++) {
-        display.point( i, j );
+    for(int y = 0; y < display.getHeight(); y ++) {
+      for(int x = 0; x < display.getWidth(); x ++) {
+        display.point( x, y );
         display.display();
+
+        System.out.format( "x: %d, y: %d", x, y );
         Thread.sleep( 50 );
       }
     }
