@@ -60,8 +60,8 @@ public class MySSD1306 {
         display.point( x, y );
         display.display();
 
-        System.out.format( "x: %d, y: %d", x, y );
-        Thread.sleep( 50 );
+        System.out.format( "x: %d, y: %d\n", x, y );
+        Thread.sleep( 10 );
       }
     }
 

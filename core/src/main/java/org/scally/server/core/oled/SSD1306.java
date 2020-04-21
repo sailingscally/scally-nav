@@ -255,7 +255,7 @@ public class SSD1306 {
 
   public void point( int x, int y, boolean clear ) {
     int page = y / 8;
-    buffer[ x * page ] |= (byte) ( 0x01 << y % 8 );
+    buffer[ x + page * width ] |= (byte) ( 0x01 << y % 8 );
   }
 
   public byte[] getBuffer() {
