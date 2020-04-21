@@ -1,5 +1,7 @@
 package org.scally.spikes;
 
+import org.scally.server.core.oled.SSD1306;
+
 public class MySSD1306 {
 
   // create display object
@@ -23,9 +25,9 @@ public class MySSD1306 {
 //    delay(1);
 //  }
 
-  public static void main( String[] args ) {
-
-
-
+  public static void main( String[] args ) throws Exception {
+    SSD1306 display = new SSD1306();
+    // display.clear();
+    display.display();
   }
 }

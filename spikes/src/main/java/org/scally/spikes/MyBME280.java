@@ -1,7 +1,7 @@
 package org.scally.spikes;
 
-import org.scally.server.core.sensors.BME280;
-import org.scally.server.core.sensors.BME280Data;
+import org.scally.server.core.sensors.env.BME280;
+import org.scally.server.core.sensors.env.BME280Data;
 
 public class MyBME280 {
 

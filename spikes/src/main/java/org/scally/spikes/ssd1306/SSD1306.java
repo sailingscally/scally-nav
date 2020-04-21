@@ -70,8 +70,6 @@ public class  SSD1306 {
   private int pages = 0;
   private int[] buffer = null;
 
-  //private SpiDevice spiDevice = null; // Only available in PI4J Jan-2015
-
   // SPI: Serial Peripheral Interface. Default pin values.
   private static Pin spiClk = RaspiPin.GPIO_14; // Pin #23, SCLK, GPIO_11
   private static Pin spiMosi = RaspiPin.GPIO_12; // Pin #19, SPI0_MOSI

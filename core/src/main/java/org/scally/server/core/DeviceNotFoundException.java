@@ -1,4 +1,4 @@
-package org.scally.server.core.sensors;
+package org.scally.server.core;
 
 public class DeviceNotFoundException extends Exception {
 

@@ -1,4 +1,4 @@
-package org.scally.server.core.sensors;
+package org.scally.server.core.sensors.env;
 
 public enum BME280Status {
 
