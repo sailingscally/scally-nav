@@ -27,13 +27,19 @@ public class MySSD1306 {
 
   public static void main( String[] args ) throws Exception {
     SSD1306 display = new SSD1306();
-    // display.clear();
     display.display();
 
-//    byte[] buffer = display.getBuffer();
-//    buffer[0] = 0b00000001;
+    byte[] buffer = display.getBuffer();
+    buffer[20] = (byte) 0xFF;
+    buffer[21] = (byte) 0xFF;
+    buffer[22] = (byte) 0xFF;
+    buffer[23] = (byte) 0xFF;
+    buffer[24] = (byte) 0xFF;
+    buffer[25] = (byte) 0xFF;
+    buffer[26] = (byte) 0xFF;
+    buffer[27] = (byte) 0xFF;
 
-//    display.setBuffer( buffer );
-//    display.display();
+    display.setBuffer( buffer );
+    display.display();
   }
 }
