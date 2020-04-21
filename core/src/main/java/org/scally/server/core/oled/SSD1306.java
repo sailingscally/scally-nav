@@ -262,7 +262,7 @@ public class SSD1306 {
     if( !clear ) {
       buffer[i] |= value;
     } else {
-      buffer[i] &= ~value;
+      buffer[i] ^= value;
     }
   }
 
