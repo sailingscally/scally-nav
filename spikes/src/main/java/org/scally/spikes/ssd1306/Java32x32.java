@@ -1,6 +1,6 @@
 package org.scally.spikes.ssd1306;
 
-public class Java32x32 implements ImgInterface {
+public class Java32x32 {
   private final int w = 32, h = 32;
   // Created with http://en.radzio.dxp.pl/bitmap_converter/
   private final int[] imgBuffer = new int[] { // 128
@@ -14,19 +14,16 @@ public class Java32x32 implements ImgInterface {
     0x76, 0x76, 0x77, 0x72, 0x72, 0x50, 0x70, 0x78, 0x78, 0x3C, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00
   };
 
-  @Override
   public int getW()
   {
     return this.w;
   }
 
-  @Override
   public int getH()
   {
     return this.h;
   }
 
-  @Override
   public int[] getImgBuffer()
   {
     return this.imgBuffer;

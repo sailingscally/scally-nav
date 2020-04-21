@@ -316,17 +316,17 @@ public class ScreenBuffer {
     }
   }
 
-  public void image(ImgInterface img, int topLeftX, int topLeftY) {
+  public void image(Java32x32 img, int topLeftX, int topLeftY) {
     image(img, topLeftX, topLeftY, Mode.WHITE_ON_BLACK);
   }
 
-  public void image(ImgInterface img, int topLeftX, int topLeftY, Mode mode) {
+  public void image(Java32x32 img, int topLeftX, int topLeftY, Mode mode) {
     int w = img.getW();
     int h = img.getH(); // Assume h % 8 = 0
     int[] imgBuf = img.getImgBuffer();
     for (int col = 0; col < w; col++) {
       for (int row = 0; row < (h / 8); row++) {
-        String bitMapCol = StringUtils.lpad(Integer.toBinaryString(imgBuf[col + (w * row)]), 8, "0").replace('0', (mode == Mode.WHITE_ON_BLACK ? ' ' : 'X')).replace('1', (mode == Mode.WHITE_ON_BLACK ? 'X' : ' '));
+        String bitMapCol = lpad(Integer.toBinaryString(imgBuf[col + (w * row)]), 8, "0").replace('0', (mode == Mode.WHITE_ON_BLACK ? ' ' : 'X')).replace('1', (mode == Mode.WHITE_ON_BLACK ? 'X' : ' '));
         // Write in the scren matrix
         // screenMatrix[line][col]
         for (int y = 0; y < 8; y++) {
@@ -337,6 +337,14 @@ public class ScreenBuffer {
         }
       }
     }
+  }
+
+  private String lpad(String s, int len, String pad) {
+    String str = s;
+    while (str.length() < len) {
+      str = pad + str;
+    }
+    return str;
   }
 
   /**
@@ -360,30 +368,5 @@ public class ScreenBuffer {
       }
     }
     return len;
-  }
-
-  /**
-   * Use if the screen is to be seen in a mirror.
-   * Left and right are inverted.
-   *
-   * @param buff the screen buffer to invert
-   * @param w    width (in pixels) of the above
-   * @param h    height (in pixels) of the above. One row has 8 pixels.
-   * @return the mirrored buffer.
-   */
-  public static int[] mirror(int[] buff, int w, int h) {
-    int len = buff.length;
-    if (len != w * (h / 8)) {
-      throw new RuntimeException(String.format("Invalid buffer length %d, should be %d (%d * %d)", len, (w * (h / 8)), w, h));
-    }
-    int[] mirror = new int[len];
-    for (int row = 0; row < (h / 8); row++) {
-      for (int col = 0; col < w; col++) {
-        int buffIdx = (row * w) + col;
-        int mirrorBuffIdx = (row * w) + (w - col - 1);
-        mirror[mirrorBuffIdx] = buff[buffIdx];
-      }
-    }
-    return mirror;
   }
 }

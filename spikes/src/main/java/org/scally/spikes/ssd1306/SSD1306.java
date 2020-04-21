@@ -6,14 +6,7 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
-import com.pi4j.io.i2c.I2CBus;
-import com.pi4j.io.i2c.I2CDevice;
-import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.wiringpi.Spi;
-
-import java.io.IOException;
-
-import static org.scally.spikes.ssd1306.TimeUtil.delay;
 
 /**
  * SSD1306, small OLED screen. SPI and I2C. 128x32, 128x64 (2 versions)
@@ -30,7 +23,6 @@ import static org.scally.spikes.ssd1306.TimeUtil.delay;
  * https://www.adafruit.com/product/661
  */
 public class  SSD1306 {
-  public final static int SSD1306_I2C_ADDRESS                          = 0x3C; // 011110+SA0+RW - 0x3C or 0x3D
   public final static int SSD1306_SETCONTRAST                          = 0x81;
   public final static int SSD1306_DISPLAYALLON_RESUME                  = 0xA4;
   public final static int SSD1306_DISPLAYALLON                         = 0xA5;
@@ -95,11 +87,6 @@ public class  SSD1306 {
   private static GpioPinDigitalOutput resetOutput = null;
   private static GpioPinDigitalOutput dcOutput = null;
 
-  private I2CBus bus;
-  private I2CDevice ssd1306;
-
-  private boolean verbose = "true".equals(System.getProperty("ssd1306.verbose", "false"));
-
   public SSD1306() {
     initSSD1306(this.width, this.height);
   }
@@ -158,41 +145,6 @@ public class  SSD1306 {
     initSSD1306(w, h);
   }
 
-  public SSD1306(int i2cAddr) throws I2CFactory.UnsupportedBusNumberException, IOException {
-    this(i2cAddr, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-  }
-  /**
-   * I2C Interface
-   *
-   * @param i2cAddr
-   * @throws I2CFactory.UnsupportedBusNumberException
-   * @throws IOException
-   */
-  public SSD1306(int i2cAddr, int w, int h) throws I2CFactory.UnsupportedBusNumberException, IOException {
-    this.width = w;
-    this.height = h;
-    if (verbose) {
-      String[] map = new String[2];
-      map[0] = String.valueOf(PinUtil.findEnumName("SDA1").pinNumber()) + ":" + "SDA";
-      map[1] = String.valueOf(PinUtil.findEnumName("SCL1").pinNumber()) + ":" + "SCL";
-      PinUtil.print(map);
-    }
-    // Get i2c bus
-    bus = I2CFactory.getInstance(I2CBus.BUS_1); // Depends on the RasPi version
-    if (verbose) {
-      System.out.println("Connected to bus. OK.");
-    }
-
-    // Get device itself
-    ssd1306 = bus.getDevice(i2cAddr);
-
-    if (verbose) {
-      System.out.println("Connected to devices. OK.");
-    }
-
-    initSSD1306(this.width, this.height); // 128x32, hard coded for now.
-  }
-
   private void initSSD1306(int w, int h) {
     if (w != 128) {
       throw new IllegalArgumentException("Width cannot be anything but 128");
@@ -207,43 +159,23 @@ public class  SSD1306 {
     this.buffer = new int[this.width * this.pages];
     clear();
 
-    if (bus == null) { // => SPI
-      int fd = Spi.wiringPiSPISetup(SPI_DEVICE, clockHertz);
-      if (fd < 0) {
-        System.err.println("SPI Setup failed");
-        System.exit(1);
-      }
-
-      gpio = GpioFactory.getInstance();
-
-      mosiOutput = gpio.provisionDigitalOutputPin(spiMosi, "MOSI", PinState.LOW);
-      clockOutput = gpio.provisionDigitalOutputPin(spiClk, "CLK", PinState.LOW);
-      chipSelectOutput = gpio.provisionDigitalOutputPin(spiCs, "CS", PinState.HIGH);
-      resetOutput = gpio.provisionDigitalOutputPin(spiRst, "RST", PinState.LOW);
-      dcOutput = gpio.provisionDigitalOutputPin(spiDc, "DC", PinState.LOW);
-
-      if (verbose) {
-        String[] map = new String[5];
-        map[0] = String.valueOf(PinUtil.findByPin(spiMosi).pinNumber()) + ":" + "MOSI";
-        map[1] = String.valueOf(PinUtil.findByPin(spiClk).pinNumber()) + ":" + "CLK";
-        map[2] = String.valueOf(PinUtil.findByPin(spiCs).pinNumber()) + ":" + "CS";
-        map[3] = String.valueOf(PinUtil.findByPin(spiRst).pinNumber()) + ":" + "RST";
-        map[4] = String.valueOf(PinUtil.findByPin(spiDc).pinNumber()) + ":" + "DC";
-        PinUtil.print(map);
-      }
+    int fd = Spi.wiringPiSPISetup(SPI_DEVICE, clockHertz);
+    if (fd < 0) {
+      System.err.println("SPI Setup failed");
+      System.exit(1);
     }
+
+    gpio = GpioFactory.getInstance();
+
+    mosiOutput = gpio.provisionDigitalOutputPin(spiMosi, "MOSI", PinState.LOW);
+    clockOutput = gpio.provisionDigitalOutputPin(spiClk, "CLK", PinState.LOW);
+    chipSelectOutput = gpio.provisionDigitalOutputPin(spiCs, "CS", PinState.HIGH);
+    resetOutput = gpio.provisionDigitalOutputPin(spiRst, "RST", PinState.LOW);
+    dcOutput = gpio.provisionDigitalOutputPin(spiDc, "DC", PinState.LOW);
   }
 
   public void shutdown() {
-    if (bus == null) {
-      gpio.shutdown();
-    } else {
-      try {
-        bus.close();
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
-    }
+    gpio.shutdown();
   }
 
   public void setBuffer(int[] buffer) {
@@ -260,29 +192,13 @@ public class  SSD1306 {
    * if deassertSs is True the SS line be put back high.
    */
   private void write(int[] data) {
-    if (bus == null) {
-      write(data, true, true);
-    } else {
-      byte[] bb = new byte[data.length];
-      for (int i=0; i<bb.length; i++) {
-        bb[i] = (byte)data[i];
-      }
-      try {
-        ssd1306.write(0x0, bb);
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
-    }
+    write(data, true, true);
   }
 
   private final int MASK = 0x80; // MSBFIRST, 0x80 = 0&10000000
   //private final int MASK = 0x01; // LSBFIRST
 
   private void write(int[] data, boolean assert_ss, boolean deassert_ss) {
-    // Fail if MOSI is not specified.
-    if (mosiOutput == null) {
-      throw new RuntimeException("Write attempted with no MOSI pin specified.");
-    }
     if (assert_ss && chipSelectOutput != null) {
       chipSelectOutput.low();
     }
@@ -308,47 +224,39 @@ public class  SSD1306 {
   }
 
   private void command(int c) throws Exception {
-    if (dcOutput != null) {
-      dcOutput.low();
-      //    try { spiDevice.write((byte)c); }
-      //    catch (IOException ioe) { ioe.printStackTrace(); }
-      this.write(new int[]{c});
-    } else {
-      try {
-        this.ssd1306.write(SSD1306_SETLOWCOLUMN, (byte) c);
-      } catch (Exception ex) {
-        ex.printStackTrace();
-        throw ex;
-      }
-    }
+    dcOutput.low();
+    this.write(new int[]{c});
   }
 
   private void reset() {
-    if (resetOutput != null) {
-      resetOutput.high();
-      delay(1);
-      // Set reset low for 10 milliseconds.
-      resetOutput.low();
-      delay(10);
-      // Set reset high again.
-      resetOutput.high();
+    resetOutput.high();
+
+    try {
+      Thread.sleep(1);
+    } catch (InterruptedException ie) {
+      Thread.currentThread().interrupt();
     }
+
+
+    // Set reset low for 10 milliseconds.
+    resetOutput.low();
+
+    try {
+      Thread.sleep(10);
+    } catch (InterruptedException ie) {
+      Thread.currentThread().interrupt();
+    }
+
+    // Set reset high again.
+    resetOutput.high();
   }
 
   public void data(int c) {
-    if (dcOutput != null) {
-      // SPI write.
-      dcOutput.high();
-      //    try { spiDevice.write((byte)c); }
-      //    catch (IOException ioe) { ioe.printStackTrace(); }
-      this.write(new int[]{c});
-    } else {
-      try {
-        this.ssd1306.write(SSD1306_SETSTARTLINE, (byte) c);
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
-    }
+    // SPI write.
+    dcOutput.high();
+    //    try { spiDevice.write((byte)c); }
+    //    catch (IOException ioe) { ioe.printStackTrace(); }
+    this.write(new int[]{c});
   }
 
   /**
@@ -376,9 +284,6 @@ public class  SSD1306 {
 
     this.command(SSD1306_SETMULTIPLEX);        // 0xA8
     this.command(height == 32 ? 0x1F : 0x3F); // Height - 1 : 1F = 31 = 32 - 1, 3F = 63 = 64 - 1
-    if (verbose) {
-      System.out.println(String.format(">>> Initialize: screen height: %d", height));
-    }
 
     this.command(SSD1306_SETDISPLAYOFFSET);    // 0xD3
     this.command(0x0);                         // no offset
@@ -446,22 +351,10 @@ public class  SSD1306 {
     this.command(0); // Page start address. (0 = reset)
     this.command(this.pages - 1); // Page end address.
 
-    if (dcOutput != null) {
-      // Write buffer data.
-      //   Set DC high for data.
-      dcOutput.high();
-      this.write(this.buffer);
-    } else {
-      try {
-        byte[] bb = new byte[this.buffer.length];
-        for (int i=0; i<bb.length; i++) {
-          bb[i] = (byte)this.buffer[i];
-        }
-        this.ssd1306.write(SSD1306_SETSTARTLINE, bb);
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
-    }
+    // Write buffer data.
+    //   Set DC high for data.
+    dcOutput.high();
+    this.write(this.buffer);
   }
 
   /**
