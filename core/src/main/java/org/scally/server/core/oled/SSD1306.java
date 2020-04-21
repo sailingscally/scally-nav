@@ -81,6 +81,8 @@ public class SSD1306 {
   private int width;
   private int height;
 
+  private boolean inverted = false;
+
   private int pages;
   private byte[] buffer;
 
@@ -182,6 +184,11 @@ public class SSD1306 {
     rst.high();
   }
 
+  public void invert() throws IOException {
+    command( inverted ? SET_INVERSE_DISPLAY : SET_NORMAL_DISPLAY );
+    inverted = !inverted;
+  }
+
   public void shutdown() {
     gpio.shutdown();
   }
@@ -224,7 +231,7 @@ public class SSD1306 {
    * display will be written with data from the in-memory buffer and doesn't allow for small portions
    * of the display to be updated.
    */
-  public synchronized void display() throws IOException {
+  public void display() throws IOException {
     display( buffer, 0, 0, width, pages );
   }
 

@@ -47,5 +47,10 @@ public class MySSD1306 {
     }
 
     display.display( buffer, 48, 0, 32, 32 / 8 );
+
+    while( true ) {
+      display.invert();
+      Thread.sleep( 1000 );
+    }
   }
 }
