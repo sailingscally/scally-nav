@@ -58,6 +58,7 @@ public class MySSD1306 {
     for(int i = 0; i < display.getWidth(); i ++) {
       for(int j = 0; j < display.getHeight(); j ++) {
         display.point( i, j );
+        display.display();
         Thread.sleep( 50 );
       }
     }
