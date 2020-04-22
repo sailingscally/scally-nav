@@ -12,21 +12,17 @@ public class Grand9K extends Font {
     return NAME;
   }
 
-  public Grand9K() {
-    addGlyph( new Glyph( 'A', 5, 7, new byte[] {
-      (byte) 0b01111110,
-      (byte) 0b10001000,
-      (byte) 0b10001000,
-      (byte) 0b10001000,
-      (byte) 0b01111110
+  public Grand9K() throws Exception {
+    addGlyph( new Glyph( 'A', 1, 7, new byte[] {
+      (byte) 0b00000000
     } ) );
 
     addGlyph( new Glyph( 'S', 5, 7, new byte[] {
-      (byte) 0b01100010,
-      (byte) 0b10010010,
-      (byte) 0b10010010,
-      (byte) 0b10010010,
-      (byte) 0b10001100
+      (byte) 0b01000110,
+      (byte) 0b01001001,
+      (byte) 0b01001001,
+      (byte) 0b01001001,
+      (byte) 0b00110001
     } ) );
 
     addGlyph( new Glyph( 'a', 4, 7, new byte[] {
@@ -37,9 +33,9 @@ public class Grand9K extends Font {
     } ) );
 
     addGlyph( new Glyph( 'c', 3, 7, new byte[] {
-      (byte) 0b00011100,
-      (byte) 0b00100010,
-      (byte) 0b00100010
+      (byte) 0b00111000,
+      (byte) 0b01000100,
+      (byte) 0b01000100
     } ) );
 
     addGlyph( new Glyph( 'l', 1, 7, new byte[] {
@@ -47,10 +43,10 @@ public class Grand9K extends Font {
     } ) );
 
     addGlyph( new Glyph( 'y', 4, 7, new byte[] {
-      (byte) 0b00111001,
-      (byte) 0b00000101,
-      (byte) 0b00000101,
-      (byte) 0b00111110
+      (byte) 0b10011100,
+      (byte) 0b10100000,
+      (byte) 0b10100000,
+      (byte) 0b01111100
     } ) );
   }
 }

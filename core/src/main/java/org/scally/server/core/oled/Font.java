@@ -13,7 +13,11 @@ public abstract class Font {
     return glyphs.get( c );
   }
 
-  public void addGlyph( Glyph glyph ) {
+  public void addGlyph( Glyph glyph ) throws Exception {
+    if( glyph.getWidth() != glyph.getData().length ) {
+      throw new Exception( "InvalidGlyphSizeException" );
+    }
+
     glyphs.put( glyph.getChar(), glyph );
   }
 }

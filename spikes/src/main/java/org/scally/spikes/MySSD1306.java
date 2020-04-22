@@ -91,8 +91,8 @@ public class MySSD1306 {
     for( int i = 0; i < text.length(); i ++ ) {
       Glyph glyph = font.getGlyph( text.charAt( i ) );
 
-      for(int c = 0; c < glyph.getWidth(); c ++) {
-        buffer[column ++] = glyph.getData()[c];
+      for( byte b : glyph.getData() ) {
+        buffer[column ++] = b;
       }
 
       column += 2; // space between characters is two pixels
