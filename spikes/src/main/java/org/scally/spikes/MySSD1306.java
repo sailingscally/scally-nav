@@ -8,42 +8,18 @@ import org.scally.server.core.oled.Glyph;
 import org.scally.server.core.oled.GlyphNotFoundException;
 import org.scally.server.core.oled.SSD1306;
 import org.scally.server.core.oled.fonts.Grand9K;
+import org.scally.server.core.sensors.env.BME280;
+import org.scally.server.core.sensors.env.BME280Data;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Enumeration;
 
 public class MySSD1306 {
 
-  // create display object
-// Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
-  //  OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
-
-
-  //display.display() to show logo
-  //sleep(2s)
-  //  display.clear()
-
-  // display.drawPixel(10, 10, SSD1306_WHITE); draw a single pixel
-  // sleeps(2s)
-
-  // draw a line
-  // clear()
-
-//  for(i=0; i<display.width(); i+=4) {
-//    display.drawLine(0, 0, i, display.height()-1, SSD1306_WHITE);
-//    display.display(); // Update screen with each newly-drawn line
-//    delay(1);
-//  }
-
   public static void main( String[] args ) throws Exception {
     SSD1306 display = new SSD1306();
-    // display.display();
+    BME280 bme280 = new BME280();
 
-/*
+    /*
     for( int i = 0; i < 5; i ++ ) {
       Thread.sleep( 1000 );
       display.invert();
@@ -78,6 +54,7 @@ public class MySSD1306 {
     Thread.sleep( 2000 );
     printNameText( display );
     printNetworkAddress( display );
+    printEnvironmentData( display, bme280 );
 
     display.shutdown();
   }
@@ -124,7 +101,6 @@ public class MySSD1306 {
 
     display.setBuffer( buffer );
     display.display();
-
   }
 
   public static void printNetworkAddress( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
@@ -151,6 +127,41 @@ public class MySSD1306 {
 
     display.setBuffer( buffer );
     display.display();
+  }
 
+  public static void printEnvironmentData( SSD1306 display, BME280 bme280 ) throws RuntimeException {
+    try {
+      while( true ) {
+        BME280Data data = bme280.read();
+
+        System.out.printf( "Temperature in Celsius : %.1f C %n", data.getTemperature() );
+        System.out.printf( "Pressure : %.2f hPa %n", data.getPressure() );
+        System.out.printf( "Relative Humidity : %.1f %% RH %n", data.getHumidity() );
+        System.out.println();
+
+        String temperature = String.format( "%.0f ºC", data.getTemperature() );
+
+        Font font = FontFactory.getFont( Grand9K.NAME );
+
+        // print temperature in the 2nd page and align left
+        int column = 128;
+        byte[] buffer = display.getBuffer();
+
+        for( int i = 0; i < temperature.length(); i ++ ) {
+          Glyph glyph = font.getGlyph( temperature.charAt( i ) );
+
+          for( byte b : glyph.getData() ) {
+            buffer[column ++] = b;
+          }
+
+          column += font.getSpaceWidth();
+        }
+
+        display.setBuffer( buffer );
+        display.display();
+      }
+    } catch ( Exception e ) {
+      throw new RuntimeException( e.getMessage(), e );
+    }
   }
 }

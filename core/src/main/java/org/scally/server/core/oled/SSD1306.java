@@ -126,6 +126,7 @@ public class SSD1306 {
     try {
       reset();
       init();
+      display(); // clears the display on start in case there was data in the display
     } catch ( InterruptedException | IOException e ) {
       throw new DeviceInitializationException( "Unable to initialize SSD1306 display.", e );
     }
