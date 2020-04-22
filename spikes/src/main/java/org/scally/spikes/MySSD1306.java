@@ -91,11 +91,11 @@ public class MySSD1306 {
     for( int i = 0; i < text.length(); i ++ ) {
       Glyph glyph = font.getGlyph( text.charAt( i ) );
 
-      for(int c = 0; c < glyph.getWidth(); i ++) {
-        buffer[column] = glyph.getData()[c];
+      for(int c = 0; c < glyph.getWidth(); c ++) {
+        buffer[column ++] = glyph.getData()[c];
       }
 
-      column ++; // space between characters is two pixels
+      column += 2; // space between characters is two pixels
     }
 
     display.setBuffer( buffer );
