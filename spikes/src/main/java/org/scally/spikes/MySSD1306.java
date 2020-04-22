@@ -70,20 +70,21 @@ public class MySSD1306 {
 
       // page #0
       printNameText( display );
+      printSystemDate(display);
 
       // page #1
-      printDateAndTime( display );
-
-      // page #2
       printEnvironmentData( display, bme280 );
 
-      // page #3
+      // page #2
       printSystemVoltage( display, ads );
+
+      // page #3
       printNetworkAddress( display );
+      printSystemTime( display );
 
       display.display();
 
-      Thread.sleep( 500 );
+      Thread.sleep( 5000 );
     }
 
     // display.shutdown();
@@ -111,20 +112,11 @@ public class MySSD1306 {
   }
 
   public static void printNameText( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
-    print( "Scally Navigation Server", 0, display, FontFactory.getFont( Grand9K.NAME ) );
+    print( "Scally", 0, display, FontFactory.getFont( Grand9K.NAME ) );
   }
 
-  public static void printDateAndTime( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
-    Date dt = new Date();
-
-    print( new SimpleDateFormat( "dd-MMM-yyyy" ).format( dt ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
-    print( new SimpleDateFormat( "HH:mm:ss" ).format( dt ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
-  }
-
-  public static void printSystemVoltage( SSD1306 display, ADS1015 ads ) throws InterruptedException,
-    FontNotFoundException, GlyphNotFoundException, IOException {
-
-    print( String.format( "V: %.1f", ads.readSingleEnded( Channel.ZERO ) ), 3, display, FontFactory.getFont( Grand9K.NAME ) );
+  public static void printSystemDate( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
+    print( new SimpleDateFormat( "dd-MMM-yyyy" ).format( new Date() ), 0, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
   }
 
   public static void printEnvironmentData( SSD1306 display, BME280 bme280 ) throws InterruptedException,
@@ -132,9 +124,21 @@ public class MySSD1306 {
 
     BME280Data data = bme280.read();
 
-    print( String.format( "%.0f ºC", data.getTemperature() ), 2, display, FontFactory.getFont( Grand9K.NAME ) );
-    print( String.format( "%.0f hPa", data.getPressure() ), 2, display, FontFactory.getFont( Grand9K.NAME ), Align.CENTER );
-    print( String.format( "%.0f %%", data.getHumidity() ), 2, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+    print( String.format( "%.0f ºC", data.getTemperature() ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
+    print( String.format( "%.0f hPa", data.getPressure() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.CENTER );
+    print( String.format( "%.0f %%", data.getHumidity() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+  }
+
+  public static void printSystemVoltage( SSD1306 display, ADS1015 ads ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    print( String.format( "V1: %.1f", ads.readSingleEnded( Channel.ZERO ) ), 2, display, FontFactory.getFont( Grand9K.NAME ) );
+    print( String.format( "V2: %.1f", ads.readSingleEnded( Channel.ONE ) ), 2, display, FontFactory.getFont( Grand9K.NAME ), Align.CENTER );
+    print( String.format( "A: %.1f", ads.readSingleEnded( Channel.TWO_THREE ) ), 2, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+  }
+
+  public static void printSystemTime( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
+    print( new SimpleDateFormat( "HH:mm:ss" ).format( new Date() ), 3, display, FontFactory.getFont( Grand9K.NAME ) );
   }
 
   public static void printNetworkAddress( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
