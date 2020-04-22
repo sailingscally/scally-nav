@@ -1,6 +1,7 @@
 package org.scally.spikes;
 
 import org.scally.server.core.net.Network;
+import org.scally.server.core.oled.Align;
 import org.scally.server.core.oled.Font;
 import org.scally.server.core.oled.FontFactory;
 import org.scally.server.core.oled.FontNotFoundException;
@@ -85,8 +86,55 @@ public class MySSD1306 {
   }
 
   public static void printNetworkAddress( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
-    String ip = Network.getLocalIPAddress();
+    print( Network.getLocalIPAddress(), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+  }
 
+  public static void printEnvironmentData( SSD1306 display, BME280 bme280 ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    BME280Data data = bme280.read();
+
+    print( String.format( "%.0f ºC", data.getTemperature() ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
+  }
+
+  public static void print( String text, int page, SSD1306 display, Font font ) throws GlyphNotFoundException, IOException {
+    print( text, page, display, font, Align.LEFT );
+  }
+
+  /**
+   * Page is zero based (on a 128x32 pixels screen there are four pages from 0 to 3)
+   */
+  public static void print( String text, int page, SSD1306 display, Font font, Align align ) throws GlyphNotFoundException, IOException {
+    // print temperature in the 2nd page and align left
+    byte[] buffer = display.getBuffer();
+    int column = display.getWidth() * page;
+
+    switch( align ) {
+      case RIGHT:
+        int width = font.getTextWidth( text ); // width in pixels
+        column += display.getWidth() - width; // shift offset
+        break;
+
+      case CENTER:
+        break;
+    }
+
+    for( int i = 0; i < text.length(); i ++ ) {
+      Glyph glyph = font.getGlyph( text.charAt( i ) );
+
+      for( byte b : glyph.getData() ) {
+        buffer[column ++] = b;
+      }
+
+      column += font.getSpaceWidth();
+    }
+
+    display.setBuffer( buffer );
+    display.display();
+  }
+}
+
+/*
     Font font = FontFactory.getFont( Grand9K.NAME );
     int width = font.getTextWidth( ip ); // width in pixels
 
@@ -108,35 +156,5 @@ public class MySSD1306 {
 
     display.setBuffer( buffer );
     display.display();
-  }
 
-  public static void printEnvironmentData( SSD1306 display, BME280 bme280 ) throws InterruptedException,
-    FontNotFoundException, GlyphNotFoundException, IOException {
-
-    BME280Data data = bme280.read();
-
-    print( String.format( "%.0f ºC", data.getTemperature() ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
-  }
-
-  /**
-   * Page is zero based (on a 128x32 pixels screen there are four pages from 0 to 3)
-   */
-  public static void print( String text, int page, SSD1306 display, Font font ) throws GlyphNotFoundException, IOException {
-    // print temperature in the 2nd page and align left
-    byte[] buffer = display.getBuffer();
-    int column = display.getWidth() * page;
-
-    for( int i = 0; i < text.length(); i ++ ) {
-      Glyph glyph = font.getGlyph( text.charAt( i ) );
-
-      for( byte b : glyph.getData() ) {
-        buffer[column ++] = b;
-      }
-
-      column += font.getSpaceWidth();
-    }
-
-    display.setBuffer( buffer );
-    display.display();
-  }
-}
+* */
