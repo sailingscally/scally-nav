@@ -125,6 +125,9 @@ public class MySSD1306 {
 
       offset += font.getSpaceWidth();
     }
+
+    display.setBuffer( buffer );
+    display.display();
   }
 
   public static String getLocalIPAddress() throws UnknownHostException {
