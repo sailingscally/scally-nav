@@ -8,16 +8,31 @@ public abstract class Font {
   private Map<Character, Glyph> glyphs = new HashMap<>();
 
   public abstract String getName();
+  public abstract int getSpaceWidth();
 
-  public Glyph getGlyph( char c ) {
+  public Glyph getGlyph( char c ) throws GlyphNotFoundException {
+    if( !glyphs.containsKey( c ) ) {
+      throw new GlyphNotFoundException( c, getName() );
+    }
+
     return glyphs.get( c );
   }
 
-  public void addGlyph( Glyph glyph ) throws Exception {
+  public void addGlyph( Glyph glyph ) throws InvalidGlyphSizeException {
     if( glyph.getWidth() != glyph.getData().length ) {
-      throw new Exception( "InvalidGlyphSizeException" );
+      throw new InvalidGlyphSizeException( glyph.getChar(), getName() );
     }
 
     glyphs.put( glyph.getChar(), glyph );
+  }
+
+  public int getTextWidth( String text ) throws GlyphNotFoundException {
+    int width = ( text.length() - 1 ) * getSpaceWidth();
+
+    for( int i = 0; i < text.length(); i ++ ) {
+      width += getGlyph( text.charAt( i ) ).getWidth();
+    }
+
+    return width;
   }
 }

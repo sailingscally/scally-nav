@@ -5,6 +5,9 @@ import org.scally.server.core.oled.Glyph;
 import org.scally.server.core.oled.SSD1306;
 import org.scally.server.core.oled.fonts.Grand9K;
 
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+
 public class MySSD1306 {
 
   // create display object
@@ -88,6 +91,8 @@ public class MySSD1306 {
     String text = "Scally";
     int column = 0;
 
+    // print Scally in the top left corner
+
     for( int i = 0; i < text.length(); i ++ ) {
       Glyph glyph = font.getGlyph( text.charAt( i ) );
 
@@ -95,10 +100,42 @@ public class MySSD1306 {
         buffer[column ++] = b;
       }
 
-      column += 2; // space between characters is two pixels
+      column += font.getSpaceWidth();
     }
 
     display.setBuffer( buffer );
     display.display();
+
+    // ===========================================================
+
+    // print IP address in bottom right corner
+    String ip = getLocalIPAddress();
+    int width = font.getTextWidth( ip ); // width in pixels
+
+    // print bytes to the buffer at the 4th page and aligh right
+    int offset = display.getWidth() - width;
+    offset += display.getWidth() * 3; // move to the third page
+
+    for( int i = 0; i < ip.length(); i ++ ) {
+      Glyph glyph = font.getGlyph( ip.charAt( i ) );
+
+      for( byte b : glyph.getData() ) {
+        buffer[offset ++] = b;
+      }
+
+      offset += font.getSpaceWidth();
+    }
+  }
+
+  public static String getLocalIPAddress() throws UnknownHostException {
+    String[] ip = new String[4];
+    int i = 0;
+
+
+    for( int x : Inet4Address.getLocalHost().getAddress() ) {
+      ip[ i ++ ] = String.format( "%d", x & 0xFF );
+    }
+
+    return  String.join( ".", ip );
   }
 }
