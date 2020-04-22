@@ -81,26 +81,7 @@ public class MySSD1306 {
   }
 
   public static void printNameText( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
-    String text = "Scally Navigation Server";
-
-    Font font = FontFactory.getFont( Grand9K.NAME );
-
-    // print text in the top left corner
-    int column = 0;
-    byte[] buffer = display.getBuffer();
-
-    for( int i = 0; i < text.length(); i ++ ) {
-      Glyph glyph = font.getGlyph( text.charAt( i ) );
-
-      for( byte b : glyph.getData() ) {
-        buffer[column ++] = b;
-      }
-
-      column += font.getSpaceWidth();
-    }
-
-    display.setBuffer( buffer );
-    display.display();
+    print( "Scally Navigation Server", 0, display, FontFactory.getFont( Grand9K.NAME ) );
   }
 
   public static void printNetworkAddress( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
@@ -129,39 +110,33 @@ public class MySSD1306 {
     display.display();
   }
 
-  public static void printEnvironmentData( SSD1306 display, BME280 bme280 ) throws RuntimeException {
-    try {
-      while( true ) {
-        BME280Data data = bme280.read();
+  public static void printEnvironmentData( SSD1306 display, BME280 bme280 ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
 
-        System.out.printf( "Temperature in Celsius : %.1f C %n", data.getTemperature() );
-        System.out.printf( "Pressure : %.2f hPa %n", data.getPressure() );
-        System.out.printf( "Relative Humidity : %.1f %% RH %n", data.getHumidity() );
-        System.out.println();
+    BME280Data data = bme280.read();
 
-        String temperature = String.format( "%.0f ºC", data.getTemperature() );
+    print( String.format( "%.0f ºC", data.getTemperature() ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
+  }
 
-        Font font = FontFactory.getFont( Grand9K.NAME );
+  /**
+   * Page is zero based (on a 128x32 pixels screen there are four pages from 0 to 3)
+   */
+  public static void print( String text, int page, SSD1306 display, Font font ) throws GlyphNotFoundException, IOException {
+    // print temperature in the 2nd page and align left
+    byte[] buffer = display.getBuffer();
+    int column = display.getWidth() * page;
 
-        // print temperature in the 2nd page and align left
-        int column = 128;
-        byte[] buffer = display.getBuffer();
+    for( int i = 0; i < text.length(); i ++ ) {
+      Glyph glyph = font.getGlyph( text.charAt( i ) );
 
-        for( int i = 0; i < temperature.length(); i ++ ) {
-          Glyph glyph = font.getGlyph( temperature.charAt( i ) );
-
-          for( byte b : glyph.getData() ) {
-            buffer[column ++] = b;
-          }
-
-          column += font.getSpaceWidth();
-        }
-
-        display.setBuffer( buffer );
-        display.display();
+      for( byte b : glyph.getData() ) {
+        buffer[column ++] = b;
       }
-    } catch ( Exception e ) {
-      throw new RuntimeException( e.getMessage(), e );
+
+      column += font.getSpaceWidth();
     }
+
+    display.setBuffer( buffer );
+    display.display();
   }
 }
