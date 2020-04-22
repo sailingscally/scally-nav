@@ -1,5 +1,13 @@
 package org.scally.spikes;
 
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalInput;
+import com.pi4j.io.gpio.PinPullResistance;
+import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
+import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import org.scally.server.core.net.Network;
 import org.scally.server.core.oled.Align;
 import org.scally.server.core.oled.Font;
@@ -60,6 +68,23 @@ public class MySSD1306 {
     display.clear();
 */
 
+    GpioController gpio = GpioFactory.getInstance();
+
+    final GpioPinDigitalInput button = gpio.provisionDigitalInputPin( RaspiPin.GPIO_00, PinPullResistance.PULL_DOWN ); // GPIO 17
+
+    button.addListener( new GpioPinListenerDigital() {
+      @Override
+      public void handleGpioPinDigitalStateChangeEvent( GpioPinDigitalStateChangeEvent event ) {
+        if( event.getState() == PinState.HIGH ) {
+          try {
+            display.clear();
+            printLogoImage( display );
+          } catch ( Exception e ) {
+          }
+        }
+      }
+    } );
+
     // start by printing a splash logo
     printLogoImage( display );
 
@@ -84,7 +109,7 @@ public class MySSD1306 {
 
       display.display();
 
-      Thread.sleep( 500 );
+      Thread.sleep( 10000 );
     }
 
     // display.shutdown();
