@@ -95,7 +95,7 @@ public class MySSD1306 {
     BME280Data data = bme280.read();
 
     print( String.format( "%.0f ºC", data.getTemperature() ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
-    // System.out.printf( "Pressure : %.2f hPa %n", data.getPressure() );
+    print( String.format( "%.0f hPa", data.getPressure() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.CENTER );
     print( String.format( "%.0f %%", data.getHumidity() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
   }
 
@@ -111,14 +111,9 @@ public class MySSD1306 {
     byte[] buffer = display.getBuffer();
     int column = display.getWidth() * page;
 
-    switch( align ) {
-      case RIGHT:
-        int width = font.getTextWidth( text ); // width in pixels
-        column += display.getWidth() - width; // shift offset
-        break;
-
-      case CENTER:
-        break;
+    if( align != Align.LEFT ) {
+      int width = font.getTextWidth( text ); // width in pixels
+      column += align == Align.RIGHT ? display.getWidth() - width : ( display.getWidth() - width ) / 2; // shift offset
     }
 
     for( int i = 0; i < text.length(); i ++ ) {

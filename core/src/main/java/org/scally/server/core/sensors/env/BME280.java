@@ -155,7 +155,7 @@ public class BME280 {
     try {
       int status = device.read( STATUS_ADDRESS ) & 0xFF;
 
-      System.out.format( ">> BME 280 device status: %d [0x%s]\n", status, Integer.toHexString( status ) );
+      // System.out.format( ">> BME 280 device status: %d [0x%s]\n", status, Integer.toHexString( status ) );
 
       if( ( status & STATUS_MEASURING_MASK ) == STATUS_MEASURING_MASK ) {
         return BME280Status.MEASURING;
