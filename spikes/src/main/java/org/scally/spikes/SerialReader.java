@@ -25,7 +25,7 @@ public class SerialReader implements SerialDataEventListener {
         } else if( data[i] == LF ) {
           // just ignore the line feed
         } else {
-          buffer.append( data[i] );
+          buffer.append( (char) data[i] );
         }
       }
     } catch ( IOException e) {
