@@ -27,7 +27,7 @@ public class SerialExample {
       @Override
       public void dataReceived( SerialDataEvent event) {
         try {
-          System.out.println(event.getAsciiString());
+          System.out.print( event.getAsciiString() );
         } catch (IOException e) {
           e.printStackTrace();
         }
