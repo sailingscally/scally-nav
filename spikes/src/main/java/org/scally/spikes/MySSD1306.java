@@ -9,6 +9,9 @@ import org.scally.server.core.oled.Glyph;
 import org.scally.server.core.oled.GlyphNotFoundException;
 import org.scally.server.core.oled.SSD1306;
 import org.scally.server.core.oled.fonts.Grand9K;
+import org.scally.server.core.sensors.adc.ADS1015;
+import org.scally.server.core.sensors.adc.Channel;
+import org.scally.server.core.sensors.adc.Gain;
 import org.scally.server.core.sensors.env.BME280;
 import org.scally.server.core.sensors.env.BME280Data;
 
@@ -20,7 +23,11 @@ public class MySSD1306 {
 
   public static void main( String[] args ) throws Exception {
     SSD1306 display = new SSD1306();
+
     BME280 bme280 = new BME280();
+
+    ADS1015 ads = new ADS1015();
+    ads.setGain( Gain.ONE );
 
     /*
     for( int i = 0; i < 5; i ++ ) {
@@ -53,15 +60,31 @@ public class MySSD1306 {
     display.clear();
 */
 
+    // start by printing a splash logo
     printLogoImage( display );
-    Thread.sleep( 2000 );
-    printNameText( display );
-    printDateAndTime( display );
-    printEnvironmentData( display, bme280 );
-    printNetworkAddress( display );
 
-    display.display();
-    display.shutdown();
+    Thread.sleep( 2000 );
+
+    while( true ) {
+      // page #0
+      printNameText( display );
+
+      // page #1
+      printDateAndTime( display );
+
+      // page #2
+      printEnvironmentData( display, bme280 );
+
+      // page #3
+      printSystemVoltage( display, ads );
+      printNetworkAddress( display );
+
+      display.display();
+
+      Thread.sleep( 500 );
+    }
+
+    // display.shutdown();
   }
 
   public static void printLogoImage( SSD1306 display ) throws IOException {
@@ -96,6 +119,12 @@ public class MySSD1306 {
     print( new SimpleDateFormat( "HH:mm:ss" ).format( dt ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
   }
 
+  public static void printSystemVoltage( SSD1306 display, ADS1015 ads ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    print( String.format( "V: %.1f", ads.readSingleEnded( Channel.ZERO ) ), 3, display, FontFactory.getFont( Grand9K.NAME ) );
+  }
+
   public static void printEnvironmentData( SSD1306 display, BME280 bme280 ) throws InterruptedException,
     FontNotFoundException, GlyphNotFoundException, IOException {
 
@@ -118,7 +147,6 @@ public class MySSD1306 {
    * Page is zero based (on a 128x32 pixels screen there are four pages from 0 to 3)
    */
   public static void print( String text, int page, SSD1306 display, Font font, Align align ) throws GlyphNotFoundException, IOException {
-    // print temperature in the 2nd page and align left
     byte[] buffer = display.getBuffer();
     int column = display.getWidth() * page;
 
