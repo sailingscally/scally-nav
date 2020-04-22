@@ -41,5 +41,9 @@ public class SerialExample {
 
     // open the default serial device/port with the configuration settings
     serial.open(config);
+
+    while ( true ) {
+      Thread.sleep( 10000 );
+    }
   }
 }
