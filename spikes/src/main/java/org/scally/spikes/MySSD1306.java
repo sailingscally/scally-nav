@@ -66,6 +66,8 @@ public class MySSD1306 {
     Thread.sleep( 2000 );
 
     while( true ) {
+      display.clear();
+
       // page #0
       printNameText( display );
 
