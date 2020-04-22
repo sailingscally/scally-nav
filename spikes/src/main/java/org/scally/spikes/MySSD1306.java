@@ -1,6 +1,9 @@
 package org.scally.spikes;
 
+import org.scally.server.core.oled.Font;
+import org.scally.server.core.oled.Glyph;
 import org.scally.server.core.oled.SSD1306;
+import org.scally.server.core.oled.fonts.Grand9K;
 
 public class MySSD1306 {
 
@@ -75,6 +78,24 @@ public class MySSD1306 {
       }
     }
 
-    display.display( buffer, 48, 0, 32, 32 / 8 );
+    display.clear();
+    buffer = display.getBuffer();
+
+    Font font = new Grand9K();
+    String text = "Scally";
+    int column = 0;
+
+    for( int i = 0; i < text.length(); i ++ ) {
+      Glyph glyph = font.getGlyph( text.charAt( i ) );
+
+      for(int c = 0; c < glyph.getWidth(); i ++) {
+        buffer[column] = glyph.getData()[c];
+      }
+
+      column ++; // space between characters is two pixels
+    }
+
+    display.setBuffer( buffer );
+    display.display();
   }
 }
