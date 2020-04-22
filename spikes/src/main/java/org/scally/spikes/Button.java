@@ -17,7 +17,7 @@ public class Button {
     final GpioController gpio = GpioFactory.getInstance();
 
     // gpio pin #02 as an input pin with its internal pull down resistor enabled
-    final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin( RaspiPin.GPIO_02, PinPullResistance.PULL_DOWN );
+    final GpioPinDigitalInput myButton = gpio.provisionDigitalInputPin( RaspiPin.GPIO_00, PinPullResistance.PULL_DOWN ); // GPIO 17
 
     // create and register gpio pin listener
     myButton.addListener( new GpioPinListenerDigital() {
