@@ -64,30 +64,77 @@ public class MySSD1306 {
     printLogoImage( display );
 
     Thread.sleep( 2000 );
+    display.clear();
 
-    while( true ) {
-      display.clear();
+    // page #0
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          display.clear( 0 );
 
-      // page #0
-      printNameText( display );
-      printSystemDate(display);
+          printNameText( display );
+          printSystemDate(display);
 
-      // page #1
-      printEnvironmentData( display, bme280 );
+          Thread.currentThread().sleep( 10000 );
+        } catch ( Exception e ) {
+          e.printStackTrace();
+        }
+      }
+    }).start();
 
-      // page #2
-      printSystemVoltage( display, ads );
+    // page #1
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          display.clear( 1 );
 
-      // page #3
-      printNetworkAddress( display );
-      printSystemTime( display );
+          printEnvironmentData( display, bme280 );
 
-      display.display();
+          Thread.currentThread().sleep( 5000 );
+        } catch ( Exception e ) {
+          e.printStackTrace();
+        }
+      }
+    }).start();
 
-      Thread.sleep( 5000 );
-    }
+    // page #2
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          display.clear( 2 );
 
-    // display.shutdown();
+          printSystemVoltage( display, ads );
+
+          Thread.currentThread().sleep( 1000 );
+        } catch ( Exception e ) {
+          e.printStackTrace();
+        }
+      }
+    }).start();
+
+    // page #3
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          display.clear( 3 );
+
+          printNetworkAddress( display );
+          printSystemTime( display );
+          display.display();
+
+          Thread.currentThread().sleep( 100 );
+        } catch ( Exception e ) {
+          e.printStackTrace();
+        }
+      }
+    }).start();
+
+    System.in.read();
+    display.shutdown();
   }
 
   public static void printLogoImage( SSD1306 display ) throws IOException {

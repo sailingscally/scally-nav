@@ -227,6 +227,15 @@ public class SSD1306 {
   }
 
   /**
+   * Resets a single page in the in-memory buffer.
+   */
+  public void clear( int page ) {
+    for( int i = page * width; i < page * (width + 1); i ++ ) {
+      buffer[i] = (byte) 0x00;
+    }
+  }
+
+  /**
    * Sends the in-memory display buffer to the OLED display.
    *
    * This is the most inefficient method of sending data to the OLED display, it assumes that the whole
