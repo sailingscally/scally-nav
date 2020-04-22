@@ -64,77 +64,30 @@ public class MySSD1306 {
     printLogoImage( display );
 
     Thread.sleep( 2000 );
-    display.clear();
 
-    // page #0
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          display.clear( 0 );
+    while( true ) {
+      display.clear();
 
-          printNameText( display );
-          printSystemDate(display);
+      // page #0
+      printNameText( display );
+      printSystemDate(display);
 
-          Thread.currentThread().sleep( 10000 );
-        } catch ( Exception e ) {
-          e.printStackTrace();
-        }
-      }
-    }).start();
+      // page #1
+      printEnvironmentData( display, bme280 );
 
-    // page #1
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          display.clear( 1 );
+      // page #2
+      printSystemVoltage( display, ads );
 
-          printEnvironmentData( display, bme280 );
+      // page #3
+      printNetworkAddress( display );
+      printSystemTime( display );
 
-          Thread.currentThread().sleep( 5000 );
-        } catch ( Exception e ) {
-          e.printStackTrace();
-        }
-      }
-    }).start();
+      display.display();
 
-    // page #2
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          display.clear( 2 );
+      Thread.sleep( 500 );
+    }
 
-          printSystemVoltage( display, ads );
-
-          Thread.currentThread().sleep( 1000 );
-        } catch ( Exception e ) {
-          e.printStackTrace();
-        }
-      }
-    }).start();
-
-    // page #3
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          display.clear( 3 );
-
-          printNetworkAddress( display );
-          printSystemTime( display );
-          display.display();
-
-          Thread.currentThread().sleep( 100 );
-        } catch ( Exception e ) {
-          e.printStackTrace();
-        }
-      }
-    }).start();
-
-    System.in.read();
-    display.shutdown();
+    // display.shutdown();
   }
 
   public static void printLogoImage( SSD1306 display ) throws IOException {
@@ -185,7 +138,7 @@ public class MySSD1306 {
   }
 
   public static void printSystemTime( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
-    print( new SimpleDateFormat( "HH:mm:ss" ).format( new Date() ), 3, display, FontFactory.getFont( Grand9K.NAME ) );
+    print( new SimpleDateFormat( "HH:mm" ).format( new Date() ), 3, display, FontFactory.getFont( Grand9K.NAME ) );
   }
 
   public static void printNetworkAddress( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
