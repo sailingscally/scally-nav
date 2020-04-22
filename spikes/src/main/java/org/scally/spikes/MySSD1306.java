@@ -86,7 +86,7 @@ public class MySSD1306 {
   }
 
   public static void printNetworkAddress( SSD1306 display ) throws FontNotFoundException, GlyphNotFoundException, IOException {
-    print( Network.getLocalIPAddress(), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+    print( Network.getLocalIPAddress(), 3, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
   }
 
   public static void printEnvironmentData( SSD1306 display, BME280 bme280 ) throws InterruptedException,
@@ -95,6 +95,8 @@ public class MySSD1306 {
     BME280Data data = bme280.read();
 
     print( String.format( "%.0f ºC", data.getTemperature() ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
+    // System.out.printf( "Pressure : %.2f hPa %n", data.getPressure() );
+    print( String.format( "%.0f %%", data.getHumidity() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
   }
 
   public static void print( String text, int page, SSD1306 display, Font font ) throws GlyphNotFoundException, IOException {
@@ -133,28 +135,3 @@ public class MySSD1306 {
     display.display();
   }
 }
-
-/*
-    Font font = FontFactory.getFont( Grand9K.NAME );
-    int width = font.getTextWidth( ip ); // width in pixels
-
-    // print bytes to the buffer at the 4th page and align right
-    int offset = display.getWidth() - width;
-    offset += display.getWidth() * 3; // move to the third page
-
-    byte[] buffer = display.getBuffer();
-
-    for( int i = 0; i < ip.length(); i ++ ) {
-      Glyph glyph = font.getGlyph( ip.charAt( i ) );
-
-      for( byte b : glyph.getData() ) {
-        buffer[offset ++] = b;
-      }
-
-      offset += font.getSpaceWidth();
-    }
-
-    display.setBuffer( buffer );
-    display.display();
-
-* */
