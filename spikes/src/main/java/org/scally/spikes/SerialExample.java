@@ -37,7 +37,7 @@ public class SerialExample {
 
     // create serial config object
     SerialConfig config = new SerialConfig();
-    config.device("/dev/serial0").baud( Baud._9600).dataBits( DataBits._8).parity( Parity.NONE).stopBits( StopBits._1).flowControl( FlowControl.NONE);
+    config.device("/dev/serial0").baud( Baud._4800).dataBits( DataBits._8).parity( Parity.NONE).stopBits( StopBits._1).flowControl( FlowControl.NONE);
 
     // open the default serial device/port with the configuration settings
     serial.open(config);
