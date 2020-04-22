@@ -8,6 +8,8 @@ public abstract class Font {
   private Map<Character, Glyph> glyphs = new HashMap<>();
 
   public abstract String getName();
+
+  public abstract int getHeight();
   public abstract int getSpaceWidth();
 
   public Glyph getGlyph( char c ) throws GlyphNotFoundException {

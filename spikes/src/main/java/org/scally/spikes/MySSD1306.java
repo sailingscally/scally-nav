@@ -91,7 +91,7 @@ public class MySSD1306 {
     buffer = display.getBuffer();
 
     Font font = new Grand9K();
-    String text = "Scally";
+    String text = "Scally Navigation Server";
     int column = 0;
 
     // print Scally in the top left corner
