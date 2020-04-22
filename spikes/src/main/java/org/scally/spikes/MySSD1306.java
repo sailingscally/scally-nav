@@ -6,7 +6,10 @@ import org.scally.server.core.oled.SSD1306;
 import org.scally.server.core.oled.fonts.Grand9K;
 
 import java.net.Inet4Address;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 public class MySSD1306 {
 
@@ -110,6 +113,11 @@ public class MySSD1306 {
 
     // print IP address in bottom right corner
     String ip = getLocalIPAddress();
+
+    if ( ip == null ) {
+      throw new SocketException( "Unable to get local IP address." );
+    }
+
     int width = font.getTextWidth( ip ); // width in pixels
 
     // print bytes to the buffer at the 4th page and aligh right
@@ -130,15 +138,18 @@ public class MySSD1306 {
     display.display();
   }
 
-  public static String getLocalIPAddress() throws UnknownHostException {
-    String[] ip = new String[4];
-    int i = 0;
+  public static String getLocalIPAddress() throws SocketException {
+    Enumeration interfaces = NetworkInterface.getNetworkInterfaces();
 
+    while( interfaces.hasMoreElements() ) {
+      NetworkInterface network = (NetworkInterface) interfaces.nextElement();
+      if( network.getInterfaceAddresses().stream().filter( x -> x.getAddress().isLoopbackAddress() ).count() != 0 ) {
+        continue;
+      }
 
-    for( int x : Inet4Address.getLocalHost().getAddress() ) {
-      ip[ i ++ ] = String.format( "%d", x & 0xFF );
+      return network.getInterfaceAddresses().stream().filter( x -> x.getAddress().getAddress().length == 4 ).findFirst().get().getAddress().getHostAddress();
     }
 
-    return  String.join( ".", ip );
+    return null;
   }
 }
