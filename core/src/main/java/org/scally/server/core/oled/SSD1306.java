@@ -9,8 +9,8 @@ import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.spi.SpiChannel;
 import com.pi4j.io.spi.SpiDevice;
 import com.pi4j.io.spi.SpiFactory;
-import org.scally.server.core.DeviceInitializationException;
-import org.scally.server.core.DeviceNotFoundException;
+import org.scally.server.core.sensors.DeviceInitializationException;
+import org.scally.server.core.sensors.DeviceNotFoundException;
 
 import java.io.IOException;
 

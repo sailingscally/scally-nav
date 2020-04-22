@@ -20,7 +20,7 @@ public abstract class Font {
     return glyphs.get( c );
   }
 
-  public void addGlyph( Glyph glyph ) throws InvalidGlyphSizeException {
+  protected void addGlyph( Glyph glyph ) throws InvalidGlyphSizeException {
     if( glyph.getWidth() != glyph.getData().length ) {
       throw new InvalidGlyphSizeException( glyph.getChar(), getName() );
     }
@@ -36,5 +36,12 @@ public abstract class Font {
     }
 
     return width;
+  }
+
+  /**
+   * Returns the numbers of glyphs in this font.
+   */
+  public int getLength() {
+    return glyphs.size();
   }
 }
