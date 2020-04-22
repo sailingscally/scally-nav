@@ -50,7 +50,7 @@ public class MySSD1306 {
     }
 
     display.display( buffer, 48, 0, 32, 32 / 8 );
-
+/*
     for( int i = 0; i < 5; i ++ ) {
       Thread.sleep( 1000 );
       display.invert();
@@ -79,6 +79,9 @@ public class MySSD1306 {
     }
 
     display.clear();
+*/
+    Thread.sleep( 2000 );
+
     buffer = display.getBuffer();
 
     Font font = new Grand9K();
