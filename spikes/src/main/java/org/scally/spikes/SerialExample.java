@@ -27,8 +27,7 @@ public class SerialExample {
       @Override
       public void dataReceived( SerialDataEvent event) {
         try {
-          System.out.println("[HEX DATA]   " + event.getHexByteString());
-          System.out.println("[ASCII DATA] " + event.getAsciiString());
+          System.out.println(event.getAsciiString());
         } catch (IOException e) {
           e.printStackTrace();
         }
