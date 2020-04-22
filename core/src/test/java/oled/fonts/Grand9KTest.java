@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 public class Grand9KTest {
 
-  private static final int LENGTH = 81;
+  private static final int LENGTH = 83;
 
   @Test
   public void getName() throws FontNotFoundException {
@@ -20,7 +20,7 @@ public class Grand9KTest {
 
   @Test
   public void getGlyphs() throws FontNotFoundException, GlyphNotFoundException {
-    String glyphs = "ABCDEFGHIJKLMNOPRQSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,;:-$#'!\"/?%&()@º ";
+    String glyphs = "ABCDEFGHIJKLMNOPRQSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,;:-$#'!\"/?%&()@º \u00D9\u00DA";
     Font font = FontFactory.getFont( Grand9K.NAME );
 
     // 26 characters in this font

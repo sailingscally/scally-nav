@@ -157,8 +157,8 @@ public class MySSD1306 {
   public static void printSystemVoltage( SSD1306 display, ADS1015 ads ) throws InterruptedException,
     FontNotFoundException, GlyphNotFoundException, IOException {
 
-    print( String.format( "V1: %.1f", ads.readSingleEnded( Channel.ZERO ) ), 2, display, FontFactory.getFont( Grand9K.NAME ) );
-    print( String.format( "V2: %.1f", ads.readSingleEnded( Channel.ONE ) ), 2, display, FontFactory.getFont( Grand9K.NAME ), Align.CENTER );
+    print( String.format( "V\u00D9: %.1f", ads.readSingleEnded( Channel.ZERO ) ), 2, display, FontFactory.getFont( Grand9K.NAME ) );
+    print( String.format( "V\u00DA: %.1f", ads.readSingleEnded( Channel.ONE ) ), 2, display, FontFactory.getFont( Grand9K.NAME ), Align.CENTER );
     print( String.format( "A: %.1f", ads.readSingleEnded( Channel.TWO_THREE ) ), 2, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
   }
 

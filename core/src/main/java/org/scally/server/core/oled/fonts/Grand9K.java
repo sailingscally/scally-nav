@@ -522,5 +522,15 @@ public class Grand9K extends Font {
     addGlyph( new Glyph( ' ', 1, new byte[] {
       (byte) 0b00000000
     } ) );
+
+    addGlyph( new Glyph( '\u00D9', 2, new byte[] { // this is a small 1
+      (byte) 0b00000100,
+      (byte) 0b01111100
+    } ) );
+    addGlyph( new Glyph( '\u00DA', 3, new byte[] { // this is a small 2
+      (byte) 0b01110100,
+      (byte) 0b01010100,
+      (byte) 0b01011100
+    } ) );
   }
 }
