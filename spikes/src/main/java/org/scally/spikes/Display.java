@@ -317,12 +317,15 @@ public class Display {
   public static void printLocation( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
     FontNotFoundException, GlyphNotFoundException, IOException {
 
+    print( "Lat:", 1, display, FontFactory.getFont( Grand9K.NAME ) );
+    print( "Lng:", 2, display, FontFactory.getFont( Grand9K.NAME ) );
+
     if( gps.getFixStatus() == GpsFix.NONE ) {
-      print( "Lat:  --º --.--' -", 1, display, FontFactory.getFont( Grand9K.NAME ) );
-      print( "Lng: ---º --.--' -", 2, display, FontFactory.getFont( Grand9K.NAME ) );
+      print( "--º --.--' -", 1, display, FontFactory.getFont( Grand9K.NAME ) );
+      print( "---º --.--' -", 2, display, FontFactory.getFont( Grand9K.NAME ) );
     } else {
-      print( "Lat:  " + gps.getPosition().getLatitude( GpsPosition.LATITUDE_FORMAT ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
-      print( "Lng: " + gps.getPosition().getLongitude( GpsPosition.LONGITUDE_FORMAT ), 2, display, FontFactory.getFont( Grand9K.NAME ) );
+      print( gps.getPosition().getLatitude( GpsPosition.LATITUDE_FORMAT ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
+      print( gps.getPosition().getLongitude( GpsPosition.LONGITUDE_FORMAT ), 2, display, FontFactory.getFont( Grand9K.NAME ) );
     }
   }
 }
