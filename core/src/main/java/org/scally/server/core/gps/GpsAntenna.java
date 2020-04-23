@@ -64,8 +64,6 @@ public class GpsAntenna implements SerialLineProcessor {
       return;
     }
 
-    System.out.println( line );
-
     // remove the checksum from the NMEA sentence
     String[] data = line.substring( 0, line.lastIndexOf( '*' ) ).split( ",", -1 );
 
