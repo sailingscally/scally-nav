@@ -10,6 +10,7 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import org.scally.server.core.gps.GpsAntenna;
 import org.scally.server.core.gps.GpsFix;
+import org.scally.server.core.gps.GpsPosition;
 import org.scally.server.core.net.Network;
 import org.scally.server.core.oled.Align;
 import org.scally.server.core.oled.Font;
@@ -117,7 +118,7 @@ public class Display {
 
   public static synchronized void print() {
     try {
-      switch( screen % 2 ) {
+      switch( screen % 3 ) {
         case 0:
           display.clear();
 
@@ -148,10 +149,26 @@ public class Display {
           // page #1
           printSOG( display, gps );
           printCOG( display, gps );
-          printVariation( display, gps );
 
           // page #2
           printSatellites(display, gps);
+          printVariation( display, gps );
+
+          // page #3
+          printUTCDateTime( display, gps );
+
+          display.display();
+          break;
+
+        case 2:
+          display.clear();
+
+          // page #0
+          printNameText( display );
+          printFixStatus( display, gps );
+
+          // page #1 & #2
+          printLocation( display, gps );
 
           // page #3
           printUTCDateTime( display, gps );
@@ -294,6 +311,18 @@ public class Display {
 
       print( date.format( gps.getTimeInUTC() ), 3, display, FontFactory.getFont( Grand9K.NAME ) );
       print( time.format( gps.getTimeInUTC() ), 3, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+    }
+  }
+
+  public static void printLocation( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    if( gps.getFixStatus() == GpsFix.NONE ) {
+      print( "Lat:  --º --.--' -", 1, display, FontFactory.getFont( Grand9K.NAME ) );
+      print( "Lng: ---º --.--' -", 2, display, FontFactory.getFont( Grand9K.NAME ) );
+    } else {
+      print( "Lat:  " + gps.getPosition().getLatitude( GpsPosition.LATITUDE_FORMAT ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
+      print( "Lng: " + gps.getPosition().getLongitude( GpsPosition.LONGITUDE_FORMAT ), 2, display, FontFactory.getFont( Grand9K.NAME ) );
     }
   }
 }
