@@ -86,7 +86,7 @@ public class Display {
     button.addListener( new GpioPinListenerDigital() {
       @Override
       public void handleGpioPinDigitalStateChangeEvent( GpioPinDigitalStateChangeEvent event ) {
-        if( event.getState() == PinState.HIGH ) {
+        if( event.getState() == PinState.LOW ) {
           screen ++;
           print();
         }
@@ -104,7 +104,7 @@ public class Display {
       public void run() {
         print();
         try {
-          Thread.sleep( 1000 );
+          Thread.sleep( 5000 );
         } catch ( InterruptedException e ) {
         }
       }
@@ -250,7 +250,7 @@ public class Display {
   }
 
   public static void printFixStatus( SSD1306 display, GpsAntenna gps ) throws FontNotFoundException, GlyphNotFoundException, IOException {
-    String status = gps.getFixStatus() == GpsFix.NONE ? "--" : gps.getFixStatus() == GpsFix.FIX_3D ? "3D" : "2D";
+    String status = gps.getFixStatus() == GpsFix.NONE ? "No GPS" : gps.getFixStatus() == GpsFix.FIX_3D ? "3D Fix" : "2D Fix";
     print( status, 0, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
   }
 
@@ -263,13 +263,7 @@ public class Display {
   public static void printCOG( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
     FontNotFoundException, GlyphNotFoundException, IOException {
 
-    print( String.format( "COG: %.0fº", gps.getCourseOverGround() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.CENTER );
-  }
-
-  public static void printVariation( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
-    FontNotFoundException, GlyphNotFoundException, IOException {
-
-    print( String.format( "V: %.1f", gps.getVariation() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+    print( String.format( "COG: %.0fº", gps.getCourseOverGround() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
   }
 
   public static void printSatellites( SSD1306 displau, GpsAntenna gps ) throws InterruptedException,
@@ -278,7 +272,13 @@ public class Display {
     int sv = gps.getSatellitesInView() != null ? gps.getSatellitesInView().size() : 0;
     int prn = gps.getPRNs() != null ? gps.getPRNs().size() : 0;
 
-    print( String.format( "Satellites: %d (%d)",  sv, prn), 2, display, FontFactory.getFont( Grand9K.NAME ) );
+    print( String.format( "SVs: %d (%d)",  sv, prn), 2, display, FontFactory.getFont( Grand9K.NAME ) );
+  }
+
+  public static void printVariation( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    print( String.format( "V: %.1f", gps.getVariation() ), 2, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
   }
 
   public static void printUTCDateTime( SSD1306 displau, GpsAntenna gps ) throws InterruptedException,
