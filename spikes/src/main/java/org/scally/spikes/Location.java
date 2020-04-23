@@ -16,6 +16,8 @@ public class Location {
     while( true ) {
       Thread.sleep( 5000 );
 
+      System.in.read();
+
       System.out.format("UTC: %s | %s | %.8f, %.8f\n", gps.getTimeInUTC(), gps.getFixStatus(), gps.getPosition().getLatitude(), gps.getPosition().getLongitude() );
       System.out.format( "SOG: %.1f | COG: %.1f | V: %.1f | Satellites in View: %d", gps.getSpeedOverGround(), gps.getCourseOverGround(), gps.getVariation(), gps.getSatellitesInView().size() );
       System.out.println();
