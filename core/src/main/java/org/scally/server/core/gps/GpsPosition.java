@@ -1,0 +1,35 @@
+package org.scally.server.core.gps;
+
+public class GpsPosition {
+
+  private double lat;
+  private double lng;
+
+  /**
+   *
+   *
+   * @param ns N for North, S for South
+   * @param ew E for East, W for West
+   */
+  public GpsPosition( String lat, String ns, String lng, String ew ) {
+    // sample: 3841.9706,N,00911.5075,W = 38 degrees 41.9706 minutes North, 9 degrees 11.5075 W
+    this.lat = Double.parseDouble( lat.substring( 0, 2 ) ) + Double.parseDouble( lat.substring( 2 ) ) / 60.0;
+    this.lng = Double.parseDouble( lng.substring( 0, 3 ) ) + Double.parseDouble( lng.substring( 3 ) ) / 60.0;
+
+    this.lat *= ns.equals( "N" ) ? 1.0 : -1.0;
+    this.lng *= ew.equals( "E" ) ? 1.0 : -1.0;
+  }
+
+  @Override
+  public String toString() {
+    return String.format( "%.8f, %.8f", lat, lng );
+  }
+
+  public double getLatitude() {
+    return lat;
+  }
+
+  public double getLongitude() {
+    return lng;
+  }
+}

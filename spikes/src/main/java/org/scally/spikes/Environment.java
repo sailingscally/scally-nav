@@ -3,7 +3,7 @@ package org.scally.spikes;
 import org.scally.server.core.sensors.env.BME280;
 import org.scally.server.core.sensors.env.BME280Data;
 
-public class MyBME280 {
+public class Environment {
 
   public static void main( String args[] ) throws Exception {
     BME280 bme280 = new BME280();

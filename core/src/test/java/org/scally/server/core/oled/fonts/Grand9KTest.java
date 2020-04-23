@@ -1,11 +1,10 @@
-package oled.fonts;
+package org.scally.server.core.oled.fonts;
 
 import org.junit.Test;
 import org.scally.server.core.oled.Font;
 import org.scally.server.core.oled.FontFactory;
 import org.scally.server.core.oled.FontNotFoundException;
 import org.scally.server.core.oled.GlyphNotFoundException;
-import org.scally.server.core.oled.fonts.Grand9K;
 
 import static org.junit.Assert.assertEquals;
 

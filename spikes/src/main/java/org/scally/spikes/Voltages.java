@@ -4,7 +4,7 @@ import org.scally.server.core.sensors.adc.ADS1015;
 import org.scally.server.core.sensors.adc.Channel;
 import org.scally.server.core.sensors.adc.Gain;
 
-public class MyADS1015 {
+public class Voltages {
 
   public static void main( String[] args ) throws Exception {
     ADS1015 ads = new ADS1015();

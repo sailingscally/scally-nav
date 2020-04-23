@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MySSD1306 {
+public class Display {
 
   public static void main( String[] args ) throws Exception {
     SSD1306 display = new SSD1306();

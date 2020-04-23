@@ -1,5 +1,6 @@
 package org.scally.server.core.net;
 
+import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
@@ -31,7 +32,14 @@ public class Network {
         continue;
       }
 
-      ip = network.getInterfaceAddresses().stream().filter( x -> x.getAddress().getAddress().length == 4 ).findFirst().get().getAddress().getHostAddress();
+      ip = network.getInterfaceAddresses().stream().filter( x -> isIPv4Address( x.getAddress() ) ).findFirst().get().getAddress().getHostAddress();
     }
+  }
+
+  /**
+   * IPv4 addresses have 4 bytes (32 bits) while IPv6 addresses have 16 bytes (128 bits).
+   */
+  private static boolean isIPv4Address( InetAddress address ) {
+    return address.getAddress().length == 4;
   }
 }
