@@ -257,7 +257,7 @@ public class Display {
   public static void printSOG( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
     FontNotFoundException, GlyphNotFoundException, IOException {
 
-    print( String.format( "SOG: %.1f K", gps.getSpeedOverGround() ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
+    print( String.format( "SOG: %.1f Kn", gps.getSpeedOverGround() ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
   }
 
   public static void printCOG( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
