@@ -99,21 +99,12 @@ public class Display {
 
     Thread.sleep( 2000 );
 
+    while( true ) {
+      print();
+      Thread.sleep( 1000 );
+    }
 
-    Thread thread = new Thread( new Runnable() {
-      @Override
-      public void run() {
-        print();
-        try {
-          Thread.sleep( 500 );
-        } catch ( InterruptedException e ) {
-        }
-      }
-    } );
-    thread.start();
-
-    System.in.read();
-    display.shutdown();
+    // display.shutdown();
   }
 
   public static synchronized void print() {
