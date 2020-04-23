@@ -17,9 +17,10 @@ public class Location {
       Thread.sleep( 1000 );
 
       try {
-        System.out.format("UTC: %s | %s | %.8f, %.8f\n", gps.getTimeInUTC(), gps.getFixStatus(), gps.getPosition().getLatitude(), gps.getPosition().getLongitude() );
+        System.out.format("UTC: %s | %s | %s\n", gps.getTimeInUTC(), gps.getFixStatus(), gps.getPosition() != null ? gps.getPosition().toFormatedString() : "" );
         System.out.format( "SOG: %.1f | COG: %.1f | V: %.1f | Satellites in View: %d | PRNs: %d\n",
-          gps.getSpeedOverGround(), gps.getCourseOverGround(), gps.getVariation(), gps.getSatellitesInView().size(), gps.getPRNs().size() );
+          gps.getSpeedOverGround(), gps.getCourseOverGround(), gps.getVariation(),
+          gps.getSatellitesInView() != null ? gps.getSatellitesInView().size() : 0, gps.getPRNs() != null ? gps.getPRNs().size() : 0 );
         System.out.println();
       } catch ( Exception e ) {
         e.printStackTrace();

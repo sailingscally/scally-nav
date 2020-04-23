@@ -2,6 +2,9 @@ package org.scally.server.core.gps;
 
 public class GpsPosition {
 
+  public static final String LATITUDE_FORMAT = "%02dº %05.2f' %s";
+  public static final String LONGITUDE_FORMAT = "%03dº %05.2f' %s";
+
   private double lat;
   private double lng;
 
@@ -25,11 +28,29 @@ public class GpsPosition {
     return String.format( "%.8f, %.8f", lat, lng );
   }
 
+  public String toFormatedString() {
+    return String.format( "%s, %s", getLatitude( LATITUDE_FORMAT ), getLongitude( LONGITUDE_FORMAT ) );
+  }
+
   public double getLatitude() {
     return lat;
   }
 
+  public String getLatitude( String format ) {
+    int degrees = (int) Math.floor( Math.abs( lat ) );
+    double minutes = ( Math.abs( lat ) - degrees ) * 60;
+
+    return String.format( format, degrees, minutes, lat < 0 ? "S" : "N" );
+  }
+
   public double getLongitude() {
     return lng;
+  }
+
+  public String getLongitude( String format ) {
+    int degrees = (int) Math.floor( Math.abs( lng ) );
+    double minutes = ( Math.abs( lng ) - degrees ) * 60;
+
+    return String.format( format, degrees, minutes, lng < 0 ? "W" : "E" );
   }
 }

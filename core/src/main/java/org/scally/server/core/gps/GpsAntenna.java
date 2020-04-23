@@ -51,6 +51,8 @@ public class GpsAntenna implements SerialLineProcessor {
   public GpsAntenna() throws IOException {
     serial = new SerialInterface();
     serial.start( new SerialReader( this ) );
+
+    utc.clear();
   }
 
   public void shutdown() throws IOException {
