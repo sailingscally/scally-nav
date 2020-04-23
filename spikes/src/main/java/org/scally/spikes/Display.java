@@ -290,7 +290,7 @@ public class Display {
 
     } else {
       DateTimeFormatter date = DateTimeFormatter.ofPattern("dd-MMM-yyyy").withZone( ZoneId.of( "UTC" ) );
-      DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm UTC").withZone( ZoneId.of( "UTC" ) );
+      DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm 'UTC'").withZone( ZoneId.of( "UTC" ) );
 
       print( date.format( gps.getTimeInUTC() ), 3, display, FontFactory.getFont( Grand9K.NAME ) );
       print( time.format( gps.getTimeInUTC() ), 3, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
