@@ -8,6 +8,8 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import org.scally.server.core.gps.GpsAntenna;
+import org.scally.server.core.gps.GpsFix;
 import org.scally.server.core.net.Network;
 import org.scally.server.core.oled.Align;
 import org.scally.server.core.oled.Font;
@@ -25,17 +27,26 @@ import org.scally.server.core.sensors.env.BME280Data;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Display {
 
+  private static int screen = 0;
+
+  private static SSD1306 display;
+  private static BME280 bme280;
+  private static ADS1015 ads;
+  private static GpsAntenna gps;
+
   public static void main( String[] args ) throws Exception {
-    SSD1306 display = new SSD1306();
-
-    BME280 bme280 = new BME280();
-
-    ADS1015 ads = new ADS1015();
+    display = new SSD1306();
+    bme280 = new BME280();
+    ads = new ADS1015();
     ads.setGain( Gain.ONE );
+
+    gps = new GpsAntenna();
 
     /*
     for( int i = 0; i < 5; i ++ ) {
@@ -76,11 +87,8 @@ public class Display {
       @Override
       public void handleGpioPinDigitalStateChangeEvent( GpioPinDigitalStateChangeEvent event ) {
         if( event.getState() == PinState.HIGH ) {
-          try {
-            display.clear();
-            printLogoImage( display );
-          } catch ( Exception e ) {
-          }
+          screen ++;
+          print();
         }
       }
     } );
@@ -90,29 +98,71 @@ public class Display {
 
     Thread.sleep( 2000 );
 
-    while( true ) {
-      display.clear();
 
-      // page #0
-      printNameText( display );
-      printSystemDate(display);
+    Thread thread = new Thread( new Runnable() {
+      @Override
+      public void run() {
+        print();
+        try {
+          Thread.sleep( 1000 );
+        } catch ( InterruptedException e ) {
+        }
+      }
+    } );
+    thread.start();
 
-      // page #1
-      printEnvironmentData( display, bme280 );
+    System.in.read();
+    display.shutdown();
+  }
 
-      // page #2
-      printSystemVoltage( display, ads );
+  public static synchronized void print() {
+    try {
+      switch( screen % 2 ) {
+        case 0:
+          display.clear();
 
-      // page #3
-      printNetworkAddress( display );
-      printSystemTime( display );
+          // page #0
+          printNameText( display );
+          printSystemDate(display);
 
-      display.display();
+          // page #1
+          printEnvironmentData( display, bme280 );
 
-      Thread.sleep( 10000 );
+          // page #2
+          printSystemVoltage( display, ads );
+
+          // page #3
+          printNetworkAddress( display );
+          printSystemTime( display );
+
+          display.display();
+          break;
+
+        case 1:
+          display.clear();
+
+          // page #0
+          printNameText( display );
+          printFixStatus( display, gps );
+
+          // page #1
+          printSOG( display, gps );
+          printCOG( display, gps );
+          printVariation( display, gps );
+
+          // page #2
+          printSatellites(display, gps);
+
+          // page #3
+          printUTCDateTime( display, gps );
+
+          display.display();
+          break;
+      }
     }
-
-    // display.shutdown();
+    catch ( Exception e ) {
+      e.printStackTrace();
+    }
   }
 
   public static void printLogoImage( SSD1306 display ) throws IOException {
@@ -197,5 +247,53 @@ public class Display {
     }
 
     display.setBuffer( buffer );
+  }
+
+  public static void printFixStatus( SSD1306 display, GpsAntenna gps ) throws FontNotFoundException, GlyphNotFoundException, IOException {
+    String status = gps.getFixStatus() == GpsFix.NONE ? "--" : gps.getFixStatus() == GpsFix.FIX_3D ? "3D" : "2D";
+    print( status, 0, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+  }
+
+  public static void printSOG( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    print( String.format( "SOG: %.1f K", gps.getSpeedOverGround() ), 1, display, FontFactory.getFont( Grand9K.NAME ) );
+  }
+
+  public static void printCOG( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    print( String.format( "COG: %.0fº", gps.getCourseOverGround() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.CENTER );
+  }
+
+  public static void printVariation( SSD1306 display, GpsAntenna gps ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    print( String.format( "V: %.1f", gps.getVariation() ), 1, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+  }
+
+  public static void printSatellites( SSD1306 displau, GpsAntenna gps ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    int sv = gps.getSatellitesInView() != null ? gps.getSatellitesInView().size() : 0;
+    int prn = gps.getPRNs() != null ? gps.getPRNs().size() : 0;
+
+    print( String.format( "Satellites: %d (%d)",  sv, prn), 2, display, FontFactory.getFont( Grand9K.NAME ) );
+  }
+
+  public static void printUTCDateTime( SSD1306 displau, GpsAntenna gps ) throws InterruptedException,
+    FontNotFoundException, GlyphNotFoundException, IOException {
+
+    if( gps.getTimeInUTC().toEpochMilli() == 0 ) {
+      print( "--.---.----", 3, display, FontFactory.getFont( Grand9K.NAME ) );
+      print( "--:-- UTC", 3, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+
+    } else {
+      DateTimeFormatter date = DateTimeFormatter.ofPattern("dd-MMM-yyyy").withZone( ZoneId.of( "UTC" ) );
+      DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm UTC").withZone( ZoneId.of( "UTC" ) );
+
+      print( date.format( gps.getTimeInUTC() ), 3, display, FontFactory.getFont( Grand9K.NAME ) );
+      print( time.format( gps.getTimeInUTC() ), 3, display, FontFactory.getFont( Grand9K.NAME ), Align.RIGHT );
+    }
   }
 }
