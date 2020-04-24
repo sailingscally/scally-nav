@@ -7,10 +7,7 @@ public class GpsPosition {
   public static final String LATITUDE_FORMAT = "%02dº %05.2f' %s";
   public static final String LONGITUDE_FORMAT = "%03dº %05.2f' %s";
 
-  @JsonProperty( "lat" )
   private double lat;
-
-  @JsonProperty( "lng" )
   private double lng;
 
   /**
@@ -37,6 +34,7 @@ public class GpsPosition {
     return String.format( "%s, %s", getLatitude( LATITUDE_FORMAT ), getLongitude( LONGITUDE_FORMAT ) );
   }
 
+  @JsonProperty( "lat" )
   public double getLatitude() {
     return lat;
   }
@@ -48,6 +46,7 @@ public class GpsPosition {
     return String.format( format, degrees, minutes, lat < 0 ? "S" : "N" );
   }
 
+  @JsonProperty( "lng" )
   public double getLongitude() {
     return lng;
   }

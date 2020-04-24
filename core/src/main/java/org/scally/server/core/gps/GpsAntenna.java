@@ -1,7 +1,6 @@
 package org.scally.server.core.gps;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.scally.server.core.serial.SerialInterface;
 import org.scally.server.core.serial.SerialLineProcessor;
 
 import java.time.Instant;
@@ -11,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Receives and parses GPS data from a GPS antenna connected to a serial port communicating via NMEA 0183
@@ -44,8 +46,15 @@ public class GpsAntenna implements SerialLineProcessor {
   private Map<Integer, SatelliteInfo> satellites;
   private Calendar utc = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
 
+  private ReadWriteLock lock = new ReentrantReadWriteLock();
+  private Lock read;
+  private Lock write;
+
   public GpsAntenna() {
     utc.clear();
+
+    read = lock.readLock();
+    write = lock.writeLock();
   }
 
   @Override
@@ -58,18 +67,24 @@ public class GpsAntenna implements SerialLineProcessor {
     // remove the checksum from the NMEA sentence
     String[] data = line.substring( 0, line.lastIndexOf( '*' ) ).split( ",", -1 );
 
-    switch ( data[0] ) {
-      case RMC:
-        processRMC( data );
-        break;
+    try {
+      write.lock();
 
-      case GSA:
-        processGSA( data );
-        break;
+      switch ( data[0] ) {
+        case RMC:
+          processRMC( data );
+          break;
 
-      case GSV:
-        processGSV( data );
-        break;
+        case GSA:
+          processGSA( data );
+          break;
+
+        case GSV:
+          processGSV( data );
+          break;
+      }
+    } finally {
+      write.unlock();
     }
   }
 
@@ -167,34 +182,74 @@ public class GpsAntenna implements SerialLineProcessor {
   }
 
   public GpsPosition getPosition() {
-    return position;
+    try {
+      read.lock();
+      return position;
+    } finally {
+      read.unlock();
+    }
   }
 
   public GpsFix getFixStatus() {
-    return fix;
+    try {
+      read.lock();
+      return fix;
+    } finally {
+      read.unlock();
+    }
   }
 
   public Instant getTimeInUTC() {
-    return utc.toInstant();
+    try {
+      read.lock();
+      return utc.toInstant();
+    } finally {
+      read.unlock();
+    }
   }
 
   public double getSpeedOverGround() {
-    return speed;
+    try {
+      read.lock();
+      return speed;
+    } finally {
+      read.unlock();
+    }
   }
 
   public double getCourseOverGround() {
-    return track;
+    try {
+      read.lock();
+      return track;
+    } finally {
+      read.unlock();
+    }
   }
 
   public double getVariation() {
-    return variation;
+    try {
+      read.lock();
+      return variation;
+    } finally {
+      read.unlock();
+    }
   }
 
   public List<Integer> getPRNs() {
-    return prns;
+    try {
+      read.lock();
+      return prns;
+    } finally {
+      read.unlock();
+    }
   }
 
   public Map<Integer, SatelliteInfo> getSatellitesInView() {
-    return satellites;
+    try {
+      read.lock();
+      return satellites;
+    } finally {
+      read.unlock();
+    }
   }
 }
