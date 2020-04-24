@@ -1,4 +1,4 @@
-package org.scally.server;
+package org.scally.server.serial;
 
 import org.scally.server.core.serial.SerialInterface;
 import org.scally.server.core.serial.SerialLineProcessor;
@@ -26,7 +26,7 @@ public class SerialPort {
     try {
       logger.info( "Starting serial interface on '{}'.", SerialInterface.DEFAULT_SERIAL_PORT );
 
-      if( System.getProperty( "os.name" ).equals( RASPBERRY_PI_ARCHITECTURE ) ) {
+      if( System.getProperty( "os.arch" ).equals( RASPBERRY_PI_ARCHITECTURE ) ) {
         serial = new SerialInterface();
         serial.addReader( reader );
       } else {

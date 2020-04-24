@@ -1,6 +1,8 @@
 package org.scally.server;
 
 import org.scally.server.core.gps.GpsAntenna;
+import org.scally.server.serial.SerialPort;
+import org.scally.server.serial.SerialTcpBridge;
 import org.scally.server.tcp.TcpServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,20 +11,20 @@ import org.springframework.context.ConfigurableApplicationContext;
 @SpringBootApplication
 public class Skipper {
 
-  private static ConfigurableApplicationContext context;
-  private static GpsAntenna gps = new GpsAntenna();
-
   public static void main( String[] args ) {
-    context = SpringApplication.run( Skipper.class, args );
-    context.getBean( SerialPort.class ).addProcessor( gps );
-  }
+    ConfigurableApplicationContext context = SpringApplication.run( Skipper.class, args );
 
-//   public Skipper() {
-    // TcpServer server = context.getBean( TcpServer.class );
-    // server.run();
+    GpsAntenna gps = new GpsAntenna();
+
+    SerialTcpBridge bridge = new SerialTcpBridge();
+    bridge.setTcpServer( context.getBean( TcpServer.class ) );
 
     // MyThread myThread = context.getBean( MyThread.class, server );
     // myThread.run();
 
-//   }
+    context.getBean( SerialPort.class ).addProcessor( gps );
+    context.getBean( SerialPort.class ).addProcessor( bridge );
+
+    context.getBean( TcpServer.class ).run();
+  }
 }
