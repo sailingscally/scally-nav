@@ -4,10 +4,11 @@ import org.scally.server.core.sensors.adc.ADS1015;
 import org.scally.server.core.sensors.adc.Channel;
 import org.scally.server.core.sensors.adc.Gain;
 
-public class Voltages {
+import java.util.concurrent.locks.ReentrantLock;
 
+public class Voltages {
   public static void main( String[] args ) throws Exception {
-    ADS1015 ads = new ADS1015();
+    ADS1015 ads = new ADS1015( new ReentrantLock() );
     ads.setGain( Gain.ONE );
 
     while( true ) {
