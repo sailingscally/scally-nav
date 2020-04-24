@@ -1,17 +1,19 @@
 package org.scally.spikes;
 
 import org.scally.server.core.gps.GpsAntenna;
-import org.scally.server.core.gps.GpsFix;
-import org.scally.server.core.gps.SatelliteInfo;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import org.scally.server.core.serial.SerialInterface;
+import org.scally.server.core.serial.SerialLineReader;
 
 public class Location {
 
   public static void main( String[] args ) throws Exception {
     GpsAntenna gps = new GpsAntenna();
+
+    SerialLineReader reader = new SerialLineReader();
+    reader.addProcessor( gps );
+
+    SerialInterface serial = new SerialInterface();
+    serial.addReader( reader );
 
     while( true ) {
       Thread.sleep( 1000 );

@@ -15,8 +15,6 @@ public class BroadcastHandler implements TcpServerHandler {
   @Override
   @Async( "broadcast" )
   public void handle( Socket socket, TcpServer server ) {
-    System.out.println( LocalDateTime.now() + ": " + Thread.currentThread().getName() + " handling client " + socket.getRemoteSocketAddress() );
-
     server.addListener( socket );
 
     try ( BufferedReader reader = new BufferedReader( new InputStreamReader( socket.getInputStream() ) ) ) {

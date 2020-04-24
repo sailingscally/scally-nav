@@ -2,7 +2,7 @@ package org.scally.server.tcp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
+@Service
 public class TcpServer {
 
   private static final int SERVER_PORT = 8085;
@@ -50,7 +50,7 @@ public class TcpServer {
     notifyListeners( message, null );
   }
 
-  public void notifyListeners( String message, SocketAddress listener ) {
+  public synchronized void notifyListeners( String message, SocketAddress listener ) {
     for( SocketAddress key : listeners.keySet() ) {
       if( key.equals( listener ) ) {
         continue;

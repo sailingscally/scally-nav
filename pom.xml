@@ -20,37 +20,26 @@
     
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
-    <mariadb-client.version>2.4.2</mariadb-client.version>
-    <commons-codec.version>1.12</commons-codec.version>
+    <sfl4j.version>1.7.30</sfl4j.version>
+    <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
     <pi4j.version>1.2</pi4j.version>
 
-    <junit.version>4.12</junit.version>
-    <mockito.version>3.0.0</mockito.version>
-    <powermock.version>2.0.2</powermock.version>
+    <junit.version>4.13</junit.version>
+    <mockito.version>3.3.3</mockito.version>
+    <powermock.version>2.0.7</powermock.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${sfl4j.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
         <version>${spring-boot.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-jpa</artifactId>
-        <version>${spring-boot.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mariadb.jdbc</groupId>
-        <artifactId>mariadb-java-client</artifactId>
-        <version>${mariadb-client.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${commons-codec.version}</version>
       </dependency>
       <dependency>
         <groupId>com.pi4j</groupId>

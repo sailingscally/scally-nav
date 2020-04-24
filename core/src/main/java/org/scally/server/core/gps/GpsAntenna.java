@@ -3,9 +3,7 @@ package org.scally.server.core.gps;
 import com.google.common.annotations.VisibleForTesting;
 import org.scally.server.core.serial.SerialInterface;
 import org.scally.server.core.serial.SerialLineProcessor;
-import org.scally.server.core.serial.SerialReader;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,22 +39,13 @@ public class GpsAntenna implements SerialLineProcessor {
   private double track;
   private double variation;
 
-  private SerialInterface serial;
-
   private int gsv = 1;
   private List<Integer> prns;
   private Map<Integer, SatelliteInfo> satellites;
   private Calendar utc = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
 
-  public GpsAntenna() throws IOException {
-    serial = new SerialInterface();
-    serial.start( new SerialReader( this ) );
-
+  public GpsAntenna() {
     utc.clear();
-  }
-
-  public void shutdown() throws IOException {
-    serial.shutdown();
   }
 
   @Override

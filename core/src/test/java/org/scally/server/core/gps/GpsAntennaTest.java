@@ -3,40 +3,16 @@ package org.scally.server.core.gps;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.mock;
-import static org.powermock.reflect.Whitebox.setInternalState;
 
 public class GpsAntennaTest {
 
   @Test
   public void processData() {
-    GpsAntenna gps = mock( GpsAntenna.class );
-    doCallRealMethod().when( gps ).processLine( anyString() );
-    doCallRealMethod().when( gps ).processRMC( any( String[].class ) );
-    doCallRealMethod().when( gps ).processGSA( any( String[].class ) );
-    doCallRealMethod().when( gps ).processGSV( any( String[].class ) );
-    doCallRealMethod().when( gps ).getPosition();
-    doCallRealMethod().when( gps ).getTimeInUTC();
-    doCallRealMethod().when( gps ).getSpeedOverGround();
-    doCallRealMethod().when( gps ).getCourseOverGround();
-    doCallRealMethod().when( gps ).getVariation();
-
-    doCallRealMethod().when( gps ).getFixStatus();
-    doCallRealMethod().when( gps ).getPRNs();
-
-    doCallRealMethod().when( gps ).getSatellitesInView();
-
-    setInternalState( gps, "utc", Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) ) );
-    setInternalState( gps, "gsv", 1 );
+    GpsAntenna gps = new GpsAntenna();
 
     gps.processLine( "$GPRMC,130039,A,3841.9706,N,00911.5075,W,4.578,245.7,230420,1.8,W,A*15" );
     gps.processLine( "$GPGSA,A,2,18,25,29,,,,,,,,,,23.4,12.2,20.0*00" );

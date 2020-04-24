@@ -6,6 +6,7 @@ import com.pi4j.io.serial.FlowControl;
 import com.pi4j.io.serial.Parity;
 import com.pi4j.io.serial.Serial;
 import com.pi4j.io.serial.SerialConfig;
+import com.pi4j.io.serial.SerialDataEventListener;
 import com.pi4j.io.serial.SerialFactory;
 import com.pi4j.io.serial.StopBits;
 
@@ -30,20 +31,24 @@ public class SerialInterface {
   private Serial serial;
   private SerialConfig config;
 
-  public SerialInterface() {
+  public SerialInterface() throws IOException {
     this( DEFAULT_SERIAL_PORT, DEFAULT_DATA_RATE, DEFAULT_DATA_BITS, DEFAULT_PARITY, DEFAULT_STOP_BITS, DEFAULT_FLOW_CONTROL );
   }
 
-  public SerialInterface( String device, Baud rate, DataBits bits, Parity parity, StopBits stop, FlowControl flow ) {
+  public SerialInterface( String device, Baud rate, DataBits bits, Parity parity, StopBits stop, FlowControl flow ) throws IOException {
     config = new SerialConfig();
     config.device( device ).baud( rate ).dataBits( bits ).parity( parity ).stopBits( stop ).flowControl( flow );
 
     serial = SerialFactory.createInstance();
+    serial.open( config );
   }
 
-  public void start( SerialReader reader ) throws IOException {
+  public void addReader( SerialDataEventListener reader ) {
     serial.addListener( reader );
-    serial.open( config );
+  }
+
+  public void removeReader( SerialDataEventListener reader ) {
+    serial.removeListener( reader );
   }
 
   public void shutdown() throws IOException {
