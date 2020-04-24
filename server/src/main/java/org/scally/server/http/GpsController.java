@@ -15,9 +15,6 @@ public class GpsController {
 
   private GpsAntenna gps;
 
-  private static final String template = "Hello, %s!";
-  private final AtomicLong counter = new AtomicLong();
-
   @GetMapping( path = "/status" )
   public GpsFix status() {
     return gps != null ? gps.getFixStatus() : null;
