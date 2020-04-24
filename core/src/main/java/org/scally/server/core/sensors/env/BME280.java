@@ -134,6 +134,8 @@ public class BME280 {
   private Lock lock;
 
   public BME280( Lock lock ) throws InterruptedException, I2CFactory.UnsupportedBusNumberException, DeviceNotFoundException {
+    this.lock = lock;
+
     try {
       lock.lock();
 

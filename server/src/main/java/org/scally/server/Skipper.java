@@ -7,6 +7,7 @@ import org.scally.server.core.sensors.adc.ADS1015;
 import org.scally.server.core.sensors.adc.Gain;
 import org.scally.server.core.sensors.env.BME280;
 import org.scally.server.http.BatteryController;
+import org.scally.server.http.EnvironmentController;
 import org.scally.server.http.GpsController;
 import org.scally.server.serial.SerialPort;
 import org.scally.server.serial.SerialTcpBridge;
@@ -68,6 +69,7 @@ public class Skipper {
 
     context.getBean( GpsController.class ).setGpsAntenna( gps );
     context.getBean( BatteryController.class ).setAnalogDigitalConverter( ads );
+    context.getBean( EnvironmentController.class ).setEnvironmentSensor( bme );
 
     context.getBean( SerialPort.class ).addProcessor( gps );
     context.getBean( SerialPort.class ).addProcessor( bridge );
