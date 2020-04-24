@@ -2,6 +2,8 @@ package org.scally.server.core.serial;
 
 import com.pi4j.io.serial.SerialDataEvent;
 import com.pi4j.io.serial.SerialDataEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +17,9 @@ public class SerialLineReader implements SerialDataEventListener {
   private StringBuffer buffer = new StringBuffer();
   private List<SerialLineProcessor> processors = new Vector<>(); // thread safe
 
+
+  private Logger logger = LoggerFactory.getLogger( SerialLineReader.class );
+
   public SerialLineReader() {
   }
 
@@ -27,7 +32,7 @@ public class SerialLineReader implements SerialDataEventListener {
   }
 
   @Override
-  public void dataReceived( SerialDataEvent event) {
+  public synchronized void dataReceived( SerialDataEvent event) {
     try {
       byte[] data = event.getBytes();
 
@@ -35,7 +40,11 @@ public class SerialLineReader implements SerialDataEventListener {
         if( data[i] == CR ) {
           // we have a whole line in the buffer, let's process it
           for( SerialLineProcessor processor : processors ) {
-            processor.processLine( buffer.toString() );
+            try {
+              processor.processLine( buffer.toString() );
+            } catch ( StringIndexOutOfBoundsException e ) {
+              logger.debug( "Error processing data from serial interface.", e );
+            }
           }
 
           buffer.delete( 0, buffer.length() );

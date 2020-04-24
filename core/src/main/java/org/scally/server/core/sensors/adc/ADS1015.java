@@ -80,11 +80,11 @@ public class ADS1015 {
     return value < 0.0 ? 0.0 : value;
   }
 
-  public double readDifferential( Channel channel )throws InterruptedException {
+  public double readDifferential( Channel channel ) throws InterruptedException {
     return readDifferential( channel, gain );
   }
 
-  public double readDifferential( Channel channel, Gain gain )throws InterruptedException {
+  public double readDifferential( Channel channel, Gain gain ) throws InterruptedException {
     return readVoltage( channel, gain );
   }
 

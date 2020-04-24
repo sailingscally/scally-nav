@@ -57,8 +57,11 @@ public class GpsController {
 
     try {
       gps.lock();
-
       Map<Integer, SatelliteInfo> satellites = gps.getSatellitesInView();
+
+      if( satellites == null ) {
+        return null;
+      }
 
       if( gps.getFixStatus() != GpsFix.NONE ) {
         for( int prn : gps.getPRNs() ) {
