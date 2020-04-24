@@ -13,6 +13,8 @@ import java.io.IOException;
 @Component
 public class SerialPort {
 
+  private static final String RASPBERRY_PI_ARCHITECTURE = "arm";
+
   private Logger logger = LoggerFactory.getLogger( SerialPort.class );
 
   private SerialLineReader reader;
@@ -24,11 +26,7 @@ public class SerialPort {
     try {
       logger.info( "Starting serial interface on '{}'.", SerialInterface.DEFAULT_SERIAL_PORT );
 
-      logger.info( "os.name: '{}'", System.getProperty( "os.name" ) );
-      logger.info( "os.arch: '{}'", System.getProperty( "os.arch" ) );
-      logger.info( "os.version: '{}'", System.getProperty( "os.version" ) );
-
-      if( System.getProperty( "os.name" ).equals( "rasp" ) ) {
+      if( System.getProperty( "os.name" ).equals( RASPBERRY_PI_ARCHITECTURE ) ) {
         serial = new SerialInterface();
         serial.addReader( reader );
       } else {
