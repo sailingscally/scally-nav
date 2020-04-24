@@ -55,15 +55,21 @@ public class GpsController {
       return null;
     }
 
-    Map<Integer, SatelliteInfo> satellites = gps.getSatellitesInView();
+    try {
+      gps.lock();
 
-    if( satellites != null && gps.getFixStatus() != GpsFix.NONE ) {
-      for( int prn : gps.getPRNs() ) {
-        satellites.get( prn ).setFix( true );
+      Map<Integer, SatelliteInfo> satellites = gps.getSatellitesInView();
+
+      if( satellites != null && gps.getFixStatus() != GpsFix.NONE ) {
+        for( int prn : gps.getPRNs() ) {
+          satellites.get( prn ).setFix( true );
+        }
       }
-    }
 
-    return satellites.values().stream().collect( Collectors.toList() );
+      return satellites.values().stream().collect( Collectors.toList() );
+    } finally {
+      gps.unlock();
+    }
   }
 
   public void setGpsAntenna( GpsAntenna gps ) {

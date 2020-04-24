@@ -182,74 +182,48 @@ public class GpsAntenna implements SerialLineProcessor {
   }
 
   public GpsPosition getPosition() {
-    try {
-      read.lock();
-      return position;
-    } finally {
-      read.unlock();
-    }
+    return position;
   }
 
   public GpsFix getFixStatus() {
-    try {
-      read.lock();
-      return fix;
-    } finally {
-      read.unlock();
-    }
+    return fix;
   }
 
   public Instant getTimeInUTC() {
-    try {
-      read.lock();
-      return utc.toInstant();
-    } finally {
-      read.unlock();
-    }
+    return utc.toInstant();
   }
 
   public double getSpeedOverGround() {
-    try {
-      read.lock();
-      return speed;
-    } finally {
-      read.unlock();
-    }
+    return speed;
   }
 
   public double getCourseOverGround() {
-    try {
-      read.lock();
-      return track;
-    } finally {
-      read.unlock();
-    }
+    return track;
   }
 
   public double getVariation() {
-    try {
-      read.lock();
-      return variation;
-    } finally {
-      read.unlock();
-    }
+    return variation;
   }
 
   public List<Integer> getPRNs() {
-    try {
-      read.lock();
-      return prns;
-    } finally {
-      read.unlock();
-    }
+    return prns;
   }
 
   public Map<Integer, SatelliteInfo> getSatellitesInView() {
-    try {
-      read.lock();
-      return satellites;
-    } finally {
-      read.unlock();
-    }
+    return satellites;
+  }
+
+  /**
+   * Acquires a read lock to read in-memory GPS data.
+   */
+  public void lock() {
+    read.lock();
+  }
+
+  /**
+   * Releases the read lock so in-memory data can continue to be updated.
+   */
+  public void unlock() {
+    read.unlock();
   }
 }
