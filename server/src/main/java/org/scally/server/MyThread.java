@@ -17,7 +17,7 @@ public class MyThread {
     this.server = server;
   }
 
-  @Async
+  @Async( "executor" )
   public void run() {
     try {
       while ( true ) {
