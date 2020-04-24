@@ -25,7 +25,7 @@ public class EnvironmentController {
     }
   }
 
-  @GetMapping( path = "/pressure()" )
+  @GetMapping( path = "/pressure" )
   public double getPressure() {
     try {
       return bme != null ? bme.read().getPressure() : 0.0;
@@ -35,7 +35,7 @@ public class EnvironmentController {
     }
   }
 
-  @GetMapping( path = "/humidity()" )
+  @GetMapping( path = "/humidity" )
   public double getHumidity() {
     try {
       return bme != null ? bme.read().getHumidity() : 0.0;

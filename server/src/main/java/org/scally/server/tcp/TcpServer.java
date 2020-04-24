@@ -30,7 +30,7 @@ public class TcpServer {
   private Map<SocketAddress, Socket> listeners = new ConcurrentHashMap<>();
   private Set<Socket> l = ConcurrentHashMap.newKeySet();
 
-  @Async( "executor" )
+  @Async
   public void run() {
     logger.info( "Starting TCP server on port {}.", SERVER_PORT );
 

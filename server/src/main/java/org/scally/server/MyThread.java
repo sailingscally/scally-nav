@@ -3,11 +3,12 @@ package org.scally.server;
 import org.scally.server.tcp.TcpServer;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Component
+@Service
 public class MyThread {
 
   private TcpServer server;
@@ -16,7 +17,7 @@ public class MyThread {
     this.server = server;
   }
 
-  @Async( "executor" )
+  @Async
   public void run() {
     try {
       while ( true ) {
