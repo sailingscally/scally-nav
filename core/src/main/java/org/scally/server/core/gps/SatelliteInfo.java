@@ -7,6 +7,8 @@ public class SatelliteInfo {
   private int azimuth;
   private int snr;
 
+  private boolean fix;
+
   public SatelliteInfo( String prn, String elevation, String azimuth, String snr ) {
     this( prn.length() != 0 ? Integer.parseInt( prn ) : 0, elevation.length() != 0 ? Integer.parseInt( elevation ) : 0,
       azimuth.length() != 0 ? Integer.parseInt( azimuth ) : 0, snr.length() != 0 ? Integer.parseInt( snr ) : 0 );
@@ -33,6 +35,14 @@ public class SatelliteInfo {
 
   public int getSNR() {
     return snr;
+  }
+
+  public boolean getFix() {
+    return fix;
+  }
+
+  public void setFix( boolean fix ) {
+    this.fix = fix;
   }
 
   @Override
