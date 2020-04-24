@@ -20,6 +20,7 @@
     
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+    <jackson.version>2.10.3</jackson.version>
     <sfl4j.version>1.7.30</sfl4j.version>
     <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
     <pi4j.version>1.2</pi4j.version>
@@ -31,6 +32,11 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
