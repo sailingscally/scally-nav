@@ -3,11 +3,12 @@ package org.scally.spikes;
 import org.scally.server.core.sensors.env.BME280;
 import org.scally.server.core.sensors.env.BME280Data;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Environment {
 
   public static void main( String args[] ) throws Exception {
-    BME280 bme280 = new BME280();
-
+    BME280 bme280 = new BME280( new ReentrantLock() );
 
     while( true ) {
       BME280Data data = bme280.read();

@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Display {
@@ -43,9 +44,11 @@ public class Display {
   private static GpsAntenna gps;
 
   public static void main( String[] args ) throws Exception {
+    Lock i2cLock = new ReentrantLock();
+
     display = new SSD1306();
-    bme280 = new BME280();
-    ads = new ADS1015( new ReentrantLock() );
+    bme280 = new BME280( i2cLock );
+    ads = new ADS1015( i2cLock );
     ads.setGain( Gain.ONE );
 
     gps = new GpsAntenna();

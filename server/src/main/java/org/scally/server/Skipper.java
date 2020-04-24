@@ -5,6 +5,7 @@ import org.scally.server.core.gps.GpsAntenna;
 import org.scally.server.core.sensors.DeviceNotFoundException;
 import org.scally.server.core.sensors.adc.ADS1015;
 import org.scally.server.core.sensors.adc.Gain;
+import org.scally.server.core.sensors.env.BME280;
 import org.scally.server.http.BatteryController;
 import org.scally.server.http.GpsController;
 import org.scally.server.serial.SerialPort;
@@ -28,6 +29,7 @@ public class Skipper {
   private SerialTcpBridge bridge = new SerialTcpBridge();
 
   private ADS1015 ads;
+  private BME280 bme;
 
   private Lock i2cLock = new ReentrantLock();
   private Lock spicLock = new ReentrantLock();
@@ -47,6 +49,17 @@ public class Skipper {
     } catch ( I2CFactory.UnsupportedBusNumberException e ) {
       logger.debug( e.getMessage(), e );
     } catch ( DeviceNotFoundException e ) {
+      logger.error( e.getMessage(), e );
+    }
+
+    try {
+      bme = new BME280( i2cLock );
+
+    } catch ( I2CFactory.UnsupportedBusNumberException e ) {
+      logger.debug( e.getMessage(), e );
+    } catch ( DeviceNotFoundException e ) {
+      logger.error( e.getMessage(), e );
+    } catch ( InterruptedException e ) {
       logger.error( e.getMessage(), e );
     }
 

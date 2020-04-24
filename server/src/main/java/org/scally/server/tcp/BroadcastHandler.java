@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class BroadcastHandler implements TcpServerHandler {
 
   @Override
-  @Async( "broadcast" )
+  @Async( "executor" )
   public void handle( Socket socket, TcpServer server ) {
     server.addListener( socket );
 

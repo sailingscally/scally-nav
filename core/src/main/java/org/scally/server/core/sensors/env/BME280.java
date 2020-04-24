@@ -6,6 +6,7 @@ import com.pi4j.io.i2c.I2CFactory;
 import org.scally.server.core.sensors.DeviceNotFoundException;
 
 import java.io.IOException;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Datasheet can be found at: https://www.embeddedadventures.com/datasheets/BME280.pdf
@@ -130,15 +131,18 @@ public class BME280 {
   private I2CDevice device;
 
   private BME280Calibration calibration = new BME280Calibration();
+  private Lock lock;
 
-  public BME280( /* I2C */ ) throws InterruptedException, I2CFactory.UnsupportedBusNumberException, DeviceNotFoundException {
-    // TODO: store I2C wrapper for thread safe usage
-
+  public BME280( Lock lock ) throws InterruptedException, I2CFactory.UnsupportedBusNumberException, DeviceNotFoundException {
     try {
+      lock.lock();
+
       bus = I2CFactory.getInstance( I2CBus.BUS_1 );
       device = bus.getDevice( I2C_ADDRESS );
     } catch ( IOException e ) {
       throw new DeviceNotFoundException( String.format( "BME 280 sensor not found at address 0x%s.", Integer.toHexString( I2C_ADDRESS ) ), e );
+    } finally {
+      lock.unlock();
     }
 
     if( !check() ) {
@@ -153,6 +157,8 @@ public class BME280 {
 
   public BME280Status status() {
     try {
+      lock.lock();
+
       int status = device.read( STATUS_ADDRESS ) & 0xFF;
 
       // System.out.format( ">> BME 280 device status: %d [0x%s]\n", status, Integer.toHexString( status ) );
@@ -168,6 +174,8 @@ public class BME280 {
       return BME280Status.IDLE;
     } catch ( IOException e ) {
       e.printStackTrace();
+    } finally {
+      lock.unlock();
     }
 
     return BME280Status.ERROR;
@@ -175,9 +183,13 @@ public class BME280 {
 
   private boolean check() {
     try {
+      lock.lock();
+
       return device.read( CHIP_ID_ADDRESS ) == CHIP_ID_VALUE;
     } catch ( IOException e ) {
       e.printStackTrace();
+    } finally {
+      lock.unlock();
     }
 
     return false;
@@ -185,6 +197,8 @@ public class BME280 {
 
   private void reset() throws InterruptedException {
     try {
+      lock.lock();
+
       device.write( RESET_ADDRESS, RESET_VALUE );
 
       while ( status() != BME280Status.IDLE ) {
@@ -192,11 +206,15 @@ public class BME280 {
       }
     } catch ( IOException e ) {
       e.printStackTrace();
+    } finally {
+      lock.unlock();
     }
   }
 
   private void init() {
     try {
+      lock.lock();
+
       // humidity oversampling = 1x (001)
       device.write( CONTROL_HUMIDITY_ADDRESS, (byte) 0b00000001 );
 
@@ -207,6 +225,8 @@ public class BME280 {
       device.write( CONFIGURATION_ADDRESS, (byte) 0b10110100 );
     } catch ( IOException e ) {
       e.printStackTrace();
+    } finally {
+      lock.unlock();
     }
   }
 
@@ -215,6 +235,8 @@ public class BME280 {
     byte[] bank2 = new byte[ CALIBRATION_BANK2_LENGTH ];
 
     try {
+      lock.lock();
+
       // read 26 bytes of data from the first bank of calibration data
       device.read(CALIBRATION_BANK1_START_ADDRESS, bank1, 0, CALIBRATION_BANK1_LENGTH);
 
@@ -222,6 +244,8 @@ public class BME280 {
       device.read(CALIBRATION_BANK2_START_ADDRESS, bank2, 0, CALIBRATION_BANK2_LENGTH);
     } catch ( IOException e ) {
       e.printStackTrace();
+    } finally {
+      lock.unlock();
     }
 
     // calculate temperature calibration parameters
@@ -257,9 +281,13 @@ public class BME280 {
     byte[] data = new byte[ DATA_LENGTH ];
 
     try {
+      lock.lock();
+
       device.read( DATA_ADDRESS, data, 0, DATA_LENGTH );
     } catch ( IOException e ) {
       e.printStackTrace();
+    } finally {
+      lock.unlock();
     }
 
     return new BME280Data( data, calibration );

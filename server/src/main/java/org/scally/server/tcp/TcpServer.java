@@ -1,5 +1,7 @@
 package org.scally.server.tcp;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class TcpServer {
 
+  private Logger logger = LoggerFactory.getLogger( TcpServer.class );
+
   private static final int SERVER_PORT = 8085;
   private static final String NEW_LINE = "\r\n";
 
@@ -26,15 +30,16 @@ public class TcpServer {
   private Map<SocketAddress, Socket> listeners = new ConcurrentHashMap<>();
   private Set<Socket> l = ConcurrentHashMap.newKeySet();
 
-  @Async
+  @Async( "executor" )
   public void run() {
+    logger.info( "Starting TCP server on port {}.", SERVER_PORT );
+
     try ( ServerSocket server = new ServerSocket( SERVER_PORT ) ) {
       while ( true ) {
-        System.out.println("Waiting for clients on port " + server.getLocalPort() + "...");
         handler.handle( server.accept(), this );
       }
     } catch ( IOException e ) {
-      e.printStackTrace();
+      logger.error( "Error starting TCP server on port {}.", e );
     }
   }
 
@@ -63,7 +68,7 @@ public class TcpServer {
         writer.write( message + NEW_LINE ); // must use '\r\n' since the client system is unknown
         writer.flush();
       } catch ( IOException e ) {
-        e.printStackTrace();
+        logger.error( "Error broacasting data to TCP listeners.", e );
       }
     }
   }
