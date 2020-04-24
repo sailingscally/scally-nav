@@ -6,6 +6,7 @@ import com.pi4j.io.i2c.I2CFactory;
 import org.scally.server.core.sensors.DeviceNotFoundException;
 
 import java.io.IOException;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Datasheet can be found at: https://cdn-shop.adafruit.com/datasheets/ads1015.pdf
@@ -52,19 +53,24 @@ public class ADS1015 {
   private I2CDevice device;
 
   private Gain gain = Gain.TWO_THIRDS;
+  private Lock lock;
 
-  public ADS1015( /* I2C */ ) throws I2CFactory.UnsupportedBusNumberException, DeviceNotFoundException {
-    this( I2C_ADDRESS );
+  public ADS1015( Lock lock ) throws I2CFactory.UnsupportedBusNumberException, DeviceNotFoundException {
+    this( lock, I2C_ADDRESS );
   }
 
-  public ADS1015( /* I2C */ int address ) throws I2CFactory.UnsupportedBusNumberException, DeviceNotFoundException {
-      // TODO: store I2C wrapper for thread safe usage
+  public ADS1015( Lock lock, int address ) throws I2CFactory.UnsupportedBusNumberException, DeviceNotFoundException {
+      this.lock = lock;
 
       try {
+        lock.lock();
+
         bus = I2CFactory.getInstance( I2CBus.BUS_1 );
         device = bus.getDevice( address );
       } catch ( IOException e ) {
         throw new DeviceNotFoundException( String.format( "ADS1015 sensor not found at address 0x%s.", Integer.toHexString( address ) ), e );
+      } finally {
+        lock.unlock();
       }
   }
 
@@ -73,11 +79,16 @@ public class ADS1015 {
   }
 
   public double readSingleEnded( Channel channel, Gain gain ) throws InterruptedException {
-    double value = readVoltage( channel, gain );
+    try {
+      lock.lock();
 
-    // reading a value from a single ended input will always read a positive value
-    // however, because of device offset, the ADS1015 can still output negative values
-    return value < 0.0 ? 0.0 : value;
+      // reading a value from a single ended input will always read a positive value
+      // however, because of device offset, the ADS1015 can still output negative values
+      double value = readVoltage( channel, gain );
+      return value < 0.0 ? 0.0 : value;
+    } finally {
+      lock.unlock();
+    }
   }
 
   public double readDifferential( Channel channel ) throws InterruptedException {
@@ -85,10 +96,16 @@ public class ADS1015 {
   }
 
   public double readDifferential( Channel channel, Gain gain ) throws InterruptedException {
-    return readVoltage( channel, gain );
+    try {
+      lock.lock();
+
+      return readVoltage( channel, gain );
+    } finally {
+      lock.unlock();
+    }
   }
 
-  private double readVoltage( Channel channel, Gain gain ) throws InterruptedException {
+  private synchronized double readVoltage( Channel channel, Gain gain ) throws InterruptedException {
     byte options = (byte) ( BEGIN_SINGLE_CONVERSION | channel.getValue() | gain.getGain() | Mode.SINGLE.getValue() );
 
     try {
