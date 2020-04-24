@@ -1,6 +1,7 @@
 package org.scally.server;
 
 import org.scally.server.core.gps.GpsAntenna;
+import org.scally.server.http.GpsController;
 import org.scally.server.serial.SerialPort;
 import org.scally.server.serial.SerialTcpBridge;
 import org.scally.server.tcp.TcpServer;
@@ -21,6 +22,8 @@ public class Skipper {
 
     // MyThread myThread = context.getBean( MyThread.class, server );
     // myThread.run();
+
+    context.getBean( GpsController.class ).setGpsAntenna( gps );
 
     context.getBean( SerialPort.class ).addProcessor( gps );
     context.getBean( SerialPort.class ).addProcessor( bridge );
