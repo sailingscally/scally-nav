@@ -53,7 +53,7 @@ public class EnvironmentMonitor {
             time.clear( Calendar.MILLISECOND );
             time.clear( Calendar.SECOND );
 
-            if( barograph.stream().filter( x -> x.getTime().equals( time ) ).count() == 0 ) {
+            if( barograph.stream().filter( x -> x.getTime().equals( time.toInstant() ) ).count() == 0 ) {
               barograph.addLast( new AtmosphericPressure( time.toInstant(), getPressure() ) );
             }
 
