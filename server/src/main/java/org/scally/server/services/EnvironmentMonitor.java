@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +49,13 @@ public class EnvironmentMonitor {
           index = ++ index == BUFFER_SIZE ? 0 : index; // loop the buffer
 
           if( Calendar.getInstance().get( Calendar.MINUTE ) % 30 == 0 ) {
-            barograph.addLast( new AtmosphericPressure( Calendar.getInstance().toInstant(), getPressure() ) );
+            Calendar time = Calendar.getInstance();
+            time.clear( Calendar.MILLISECOND );
+            time.clear( Calendar.SECOND );
+
+            if( barograph.stream().filter( x -> x.getTime().equals( time ) ).count() == 0 ) {
+              barograph.addLast( new AtmosphericPressure( time.toInstant(), getPressure() ) );
+            }
 
             if( barograph.size() > BAROGRAPH_LENGTH ) {
               barograph.removeFirst();
