@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,6 +73,15 @@ public class TcpServer {
         BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( socket.getOutputStream() ) );
         writer.write( message + NEW_LINE ); // must use '\r\n' since the client system is unknown
         writer.flush();
+      } catch ( SocketException e ) {
+        removeListener( socket );
+
+        try {
+          socket.close();
+        } catch ( IOException io ) {
+          logger.debug( "Error closing listener socket after a broadcast error.", io );
+        }
+        logger.error( "Error broadcasting data to TCP listeners, most likely the client disconnected.", e );
       } catch ( IOException e ) {
         logger.error( "Error broadcasting data to TCP listeners.", e );
       }
