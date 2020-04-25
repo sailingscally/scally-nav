@@ -81,7 +81,7 @@ public class TcpServer {
         } catch ( IOException io ) {
           logger.debug( "Error closing listener socket after a broadcast error.", io );
         }
-        logger.error( "Error broadcasting data to TCP listeners, most likely the client disconnected.", e );
+        logger.debug( "Error broadcasting data to TCP listeners, most likely the client disconnected.", e );
       } catch ( IOException e ) {
         logger.error( "Error broadcasting data to TCP listeners.", e );
       }

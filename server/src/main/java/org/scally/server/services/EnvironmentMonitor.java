@@ -24,7 +24,7 @@ public class EnvironmentMonitor {
   private double[] pressure = new double[ BUFFER_SIZE ];
   private double[] humidity = new double[ BUFFER_SIZE ];
   
-  private LinkedList<Double> barograph = new LinkedList<>();
+  private LinkedList<AtmosphericPressure> barograph = new LinkedList<>();
   
   int index = 0;
   
@@ -48,7 +48,7 @@ public class EnvironmentMonitor {
           index = ++ index == BUFFER_SIZE ? 0 : index; // loop the buffer
 
           if( Calendar.getInstance().get( Calendar.MINUTE ) % 30 == 0 ) {
-            barograph.addLast( getPressure() );
+            barograph.addLast( new AtmosphericPressure( Calendar.getInstance().toInstant(), getPressure() ) );
 
             if( barograph.size() > BAROGRAPH_LENGTH ) {
               barograph.removeFirst();
@@ -79,7 +79,7 @@ public class EnvironmentMonitor {
    * Returns the atmospheric pressure history. If the system has been running
    * for less than 48 hours there will be less than 96 values stored.
    */
-  public List<Double> getBarograph() {
+  public List<AtmosphericPressure> getBarograph() {
     return barograph;
   }
 
