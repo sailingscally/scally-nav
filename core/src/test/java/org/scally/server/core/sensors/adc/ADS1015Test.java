@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -31,6 +32,7 @@ public class ADS1015Test {
 
     setInternalState( ads, "bus", bus );
     setInternalState( ads, "device", device );
+    setInternalState( ads, "lock", new ReentrantLock() );
   }
 
   @Test

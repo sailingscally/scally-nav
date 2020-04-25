@@ -11,6 +11,7 @@ import org.scally.server.http.EnvironmentController;
 import org.scally.server.http.GpsController;
 import org.scally.server.serial.SerialPort;
 import org.scally.server.serial.SerialTcpBridge;
+import org.scally.server.services.EnvironmentMonitor;
 import org.scally.server.tcp.TcpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class Skipper {
   public Skipper( ConfigurableApplicationContext context ) {
     TcpServer tcp = context.getBean( TcpServer.class );
     tcp.run();
+
     bridge.setTcpServer( tcp );
 
     try {
@@ -64,12 +66,13 @@ public class Skipper {
       logger.error( e.getMessage(), e );
     }
 
-    // MyThread myThread = context.getBean( MyThread.class, server );
-    // myThread.run();
+    EnvironmentMonitor monitor = context.getBean( EnvironmentMonitor.class );
+    monitor.setEnvironmentSensor( bme );
+    monitor.run();
 
     context.getBean( GpsController.class ).setGpsAntenna( gps );
     context.getBean( BatteryController.class ).setAnalogDigitalConverter( ads );
-    context.getBean( EnvironmentController.class ).setEnvironmentSensor( bme );
+    context.getBean( EnvironmentController.class ).setEnvironmentMonitor( monitor );
 
     context.getBean( SerialPort.class ).addProcessor( gps );
     context.getBean( SerialPort.class ).addProcessor( bridge );

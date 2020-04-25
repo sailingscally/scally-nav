@@ -63,12 +63,17 @@ public class TcpServer {
 
       Socket socket = listeners.get( key );
 
+      if( socket.isClosed() ) {
+        removeListener( socket );
+        return;
+      }
+
       try {
         BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( socket.getOutputStream() ) );
         writer.write( message + NEW_LINE ); // must use '\r\n' since the client system is unknown
         writer.flush();
       } catch ( IOException e ) {
-        logger.error( "Error broacasting data to TCP listeners.", e );
+        logger.error( "Error broadcasting data to TCP listeners.", e );
       }
     }
   }

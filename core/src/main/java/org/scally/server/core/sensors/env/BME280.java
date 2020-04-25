@@ -288,6 +288,7 @@ public class BME280 {
       device.read( DATA_ADDRESS, data, 0, DATA_LENGTH );
     } catch ( IOException e ) {
       e.printStackTrace();
+      return null;
     } finally {
       lock.unlock();
     }
