@@ -19,11 +19,19 @@ public class BroadcastHandler implements TcpServerHandler {
 
     try ( BufferedReader reader = new BufferedReader( new InputStreamReader( socket.getInputStream() ) ) ) {
       while ( socket.isConnected() ) {
-        server.notifyListeners( reader.readLine(), socket.getRemoteSocketAddress() );
+        String line = reader.readLine();
+
+        if( line == null ) {
+          socket.close();
+          break;
+        }
+
+        server.notifyListeners( line, socket.getRemoteSocketAddress() );
       }
 
       server.removeListener( socket );
     } catch ( IOException e ) {
+
       System.out.println( "Got an exception in handler " + Thread.currentThread().getName() );
     }
   }
