@@ -1,5 +1,6 @@
 package org.scally.server.http;
 
+import org.scally.server.services.AtmosphericPressure;
 import org.scally.server.services.EnvironmentMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class EnvironmentController {
   }
 
   @GetMapping( path = "/barograph" )
-  public List<Double> getBarograph() {
+  public List<AtmosphericPressure> getBarograph() {
     return monitor.getBarograph();
   }
 
