@@ -25,32 +25,32 @@ public class GpsController {
     return gps != null ? gps.getFixStatus() : null;
   }
 
-  @GetMapping( path = "/position" )
+  @GetMapping( path = "/position", produces = MediaType.APPLICATION_JSON_VALUE )
   public GpsPosition getPosition() {
     return gps != null ? gps.getPosition() : null;
   }
 
-  @GetMapping( path = "/time" )
+  @GetMapping( path = "/time", produces = MediaType.APPLICATION_JSON_VALUE )
   public Instant getTime() {
     return gps != null && gps.getTimeInUTC().toEpochMilli() != 0 ? gps.getTimeInUTC() : null;
   }
 
-  @GetMapping( path = "/sog" )
+  @GetMapping( path = "/sog", produces = MediaType.APPLICATION_JSON_VALUE )
   public double getSpeedOverGround() {
     return gps != null && gps.getFixStatus() != GpsFix.NONE ? gps.getSpeedOverGround() : 0.0;
   }
 
-  @GetMapping( path = "/cog" )
+  @GetMapping( path = "/cog", produces = MediaType.APPLICATION_JSON_VALUE )
   public int getCourseOverGround() {
     return gps != null && gps.getFixStatus() != GpsFix.NONE ? (int) Math.round( gps.getCourseOverGround() ) : 0;
   }
 
-  @GetMapping( path = "/variation" )
+  @GetMapping( path = "/variation", produces = MediaType.APPLICATION_JSON_VALUE )
   public double getVariation() {
     return gps != null && gps.getFixStatus() != GpsFix.NONE ? gps.getVariation() : 0.0;
   }
 
-  @GetMapping( path = "/satellites" )
+  @GetMapping( path = "/satellites", produces = MediaType.APPLICATION_JSON_VALUE )
   public List<SatelliteInfo> getSatellitesInView() {
     if( gps == null ) {
       return null;

@@ -5,6 +5,7 @@ import org.scally.server.core.sensors.adc.Channel;
 import org.scally.server.core.sensors.adc.Gain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,7 @@ public class BatteryController {
 
   private ADS1015 ads;
 
-  @GetMapping( path = "/primary" )
+  @GetMapping( path = "/primary", produces = MediaType.APPLICATION_JSON_VALUE )
   public double getPrimary() {
     try {
       return ads != null ? ads.readSingleEnded( Channel.ZERO, Gain.ONE ) : 0.0;
@@ -27,7 +28,7 @@ public class BatteryController {
     }
   }
 
-  @GetMapping( path = "/starter" )
+  @GetMapping( path = "/starter", produces = MediaType.APPLICATION_JSON_VALUE )
   public double getStarter() {
     try {
       return ads != null ? ads.readSingleEnded( Channel.ONE, Gain.ONE ) : 0.0;
@@ -37,7 +38,7 @@ public class BatteryController {
     }
   }
 
-  @GetMapping( path = "/current" )
+  @GetMapping( path = "/current", produces = MediaType.APPLICATION_JSON_VALUE )
   public double getCurrent() {
     try {
       // TODO: adjust gain based on shunt resistance and amplifier gain

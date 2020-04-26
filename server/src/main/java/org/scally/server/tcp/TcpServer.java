@@ -64,26 +64,12 @@ public class TcpServer {
 
       Socket socket = listeners.get( key );
 
-      if( socket.isClosed() ) {
-        removeListener( socket );
-        return;
-      }
-
       try {
         BufferedWriter writer = new BufferedWriter( new OutputStreamWriter( socket.getOutputStream() ) );
         writer.write( message + NEW_LINE ); // must use '\r\n' since the client system is unknown
         writer.flush();
-      } catch ( SocketException e ) {
-        removeListener( socket );
-
-        try {
-          socket.close();
-        } catch ( IOException io ) {
-          logger.debug( "Error closing listener socket after a broadcast error.", io );
-        }
-        logger.debug( "Error broadcasting data to TCP listeners, most likely the client disconnected.", e );
       } catch ( IOException e ) {
-        logger.error( "Error broadcasting data to TCP listeners.", e );
+        logger.debug( "Error broadcasting data to TCP listeners.", e );
       }
     }
   }
