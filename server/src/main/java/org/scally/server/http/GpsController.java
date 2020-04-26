@@ -4,6 +4,7 @@ import org.scally.server.core.gps.GpsAntenna;
 import org.scally.server.core.gps.GpsFix;
 import org.scally.server.core.gps.GpsPosition;
 import org.scally.server.core.gps.SatelliteInfo;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class GpsController {
 
   private GpsAntenna gps;
 
-  @GetMapping( path = "/status" )
+  @GetMapping( path = "/status", produces = MediaType.APPLICATION_JSON_VALUE )
   public GpsFix getStatus() {
     return gps != null ? gps.getFixStatus() : null;
   }
