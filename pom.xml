@@ -22,7 +22,7 @@
 
     <jackson.version>2.10.3</jackson.version>
     <sfl4j.version>1.7.30</sfl4j.version>
-    <spring.version>5.2.5.RELEASE</spring.version>
+    <spring.version>6.0.0</spring.version>
     <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
     <pi4j.version>1.2</pi4j.version>
 
